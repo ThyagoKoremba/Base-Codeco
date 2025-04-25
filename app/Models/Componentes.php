@@ -9,7 +9,7 @@ class Componentes extends Model
     protected $table = 'componentes';
     protected $fillable = [
         'nombre',
-        'descripcion',
+        'componente_item_proceso',
         'informacion',
         'url',
         'sn_modal',

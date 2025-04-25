@@ -18,6 +18,7 @@ const CreateMenu = ({ closeModal }) => {
         e.preventDefault();
         post(route('menu.store'), {
             onSuccess: () => {
+                window.location.reload();
                 closeModal(); // Cierra el modal al guardar exitosamente
             },
         });

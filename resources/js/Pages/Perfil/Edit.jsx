@@ -15,6 +15,7 @@ const EditPerfil = ({ perfil, closeModal }) => {
         e.preventDefault();
         put(route('perfil.update', perfil?.id), {
             onSuccess: () => {
+                window.location.reload();
                 closeModal(); // Cierra el modal al guardar exitosamente
             },
         });

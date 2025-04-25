@@ -15,6 +15,7 @@ const EditMenu = ({ menu, closeModal }) => {
         e.preventDefault();
         put(route('menu.update', menu?.id), {
             onSuccess: () => {
+                window.location.reload();
                 closeModal(); // Cierra el modal al guardar exitosamente
             },
         });

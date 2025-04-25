@@ -3,7 +3,7 @@ import { useForm } from '@inertiajs/react';
 
 import InputError from '@/Components/InputError';
 
-const CreatePerfil = ({ closeModal }) => {
+const CreatePerfil = ({ closeModal, limpiarSearch }) => {
     const initialValues = {
         nombre: "",
         descripcion: "",
@@ -18,8 +18,9 @@ const CreatePerfil = ({ closeModal }) => {
         e.preventDefault();
         post(route('perfil.store'), {
             onSuccess: () => {
-                closeModal(); // Cierra el modal al guardar exitosamente
-            },
+                window.location.reload();
+                closeModal(); // Cierra el modal
+            }
         });
     };
 

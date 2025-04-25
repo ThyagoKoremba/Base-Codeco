@@ -6,7 +6,7 @@ const EditComponente = ({ componente, closeModal }) => {
     // Proporciona valores predeterminados si 'componente' es null o undefined
     const initialValues = {
         nombre: componente?.nombre || '',
-        descripcion: componente?.descripcion || '',
+        descripcion: componente?.componente_item_proceso || '',
         informacion: componente?.informacion || '',
         url: componente?.url || '',
     };
@@ -17,6 +17,7 @@ const EditComponente = ({ componente, closeModal }) => {
         e.preventDefault();
         put(route('componente.update', componente?.id), {
             onSuccess: () => {
+                window.location.reload();
                 closeModal(); // Cierra el modal al guardar exitosamente
             },
         });
@@ -41,16 +42,16 @@ const EditComponente = ({ componente, closeModal }) => {
                                         <InputError message={errors.nombre} className="mt-2" />
                                     </div>
                                     <div className="col-6">
-                                        <label htmlFor="descripcion" className="form-label">Descripción</label>
+                                        <label htmlFor="componente_item_proceso" className="form-label">Descripción</label>
                                         <input
-                                            id="descripcion"
+                                            id="componente_item_proceso"
                                             type="text"
-                                            name="descripcion"
-                                            value={data.descripcion}
+                                            name="componente_item_proceso"
+                                            value={data.componente_item_proceso}
                                             className="form-control"
-                                            onChange={(e) => setData('descripcion', e.target.value)}
+                                            onChange={(e) => setData('componente_item_proceso', e.target.value)}
                                         />
-                                        <InputError message={errors.descripcion} className="mt-2" />
+                                        <InputError message={errors.componente_item_proceso} className="mt-2" />
                                     </div>
                                     <div className="col-6 my-3">
                                         <label htmlFor="informacion" className="form-label">Información</label>

@@ -14,6 +14,20 @@ const Vista = ({ auth, menus }) => {
 
     const [isVerModalOpen, setIsVerModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredItems, setFilteredItems] = useState(menus);
+
+    const handleSearch = () => {
+        const resultados = menus.filter((menus) =>
+            menus.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredItems(resultados);
+    };
+
+    const limpiarSearch=()=>{
+        setSearchQuery("");
+        setFilteredItems(menus)
+    }
 
     const openVerModal = (item) => {
         setSelectedItem(item);
@@ -55,12 +69,40 @@ const Vista = ({ auth, menus }) => {
                 <ComponenteModalOURL 
                 nombre={'Mes'}
                 onclick={openModal}
-                nombreBoton={'Nuevo Menú'}
+                nombreBoton={'Nuevo'}
 />
 
             </div>
+            <div className='row mx-4 my-4'>
+                <div className="col-3">
+                    <div className='input-group'>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Buscar por Nombre"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)} 
+                        />
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleSearch} 
+                        >
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+                <div className="col-2">
+                    <button 
+                    className="btn btn-secondary"
+                    onClick={limpiarSearch}
+                    >
+                        Todos
+                    </button>
+                </div>
+            </div>
 
-            <div className="tabla-index">
+            <div className="tabla-pantalla">
                 <div className="table-responsive overflow-visible">
                     <table className="table table-striped table-hover align-middle">
                         <thead className="sticky-top">
@@ -83,7 +125,7 @@ const Vista = ({ auth, menus }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {menus?.map((menu) => (
+                            {filteredItems?.map((menu) => (
                                 <tr key={menu.id} className="">
                                     <th scope="row" className="px-6 py-4 ">
                                         {menu.id}

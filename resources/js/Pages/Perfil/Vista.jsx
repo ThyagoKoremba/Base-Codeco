@@ -1,11 +1,8 @@
 import { React, useState } from 'react'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
 import './../../../css/app.css';
 import Modal from 'react-modal';
 import CreatePerfil from './Create';
 import EditPerfil from './Edit';
-import DashboardLayout from '@/Layouts/Sidebar';
 Modal.setAppElement('#app');
 
 
@@ -14,6 +11,23 @@ const Vista = ({ auth, perfiles }) => {
 
     const [isVerModalOpen, setIsVerModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredItems, setFilteredItems] = useState(perfiles);
+    
+        const handleSearch = () => {
+            const resultados = perfiles.filter((perfiles) =>
+                perfiles.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredItems(resultados);
+        };
+    
+        const limpiarSearch=()=>{
+            setSearchQuery("");
+            setFilteredItems(perfiles)
+        }
+
+
+
 
     const openVerModal = (item) => {
         setSelectedItem(item);
@@ -60,8 +74,36 @@ const Vista = ({ auth, perfiles }) => {
                         Agregar Perfil
                     </button>
                 </div>
+                <div className='row mx-4 my-4'>
+                <div className="col-3">
+                    <div className='input-group'>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Buscar por Nombre"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)} 
+                        />
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleSearch} 
+                        >
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+                <div className="col-2">
+                    <button 
+                    className="btn btn-secondary"
+                    onClick={limpiarSearch}
+                    >
+                        Todos
+                    </button>
+                </div>
+            </div>
 
-            <div className="tabla-index">
+            <div className="tabla-pantalla">
                 <div className="table-responsive overflow-visible">
                     <table className="table table-striped table-hover align-middle">
                         <thead className="sticky-top">
@@ -84,7 +126,7 @@ const Vista = ({ auth, perfiles }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {perfiles?.map((perfil) => (
+                            {filteredItems?.map((perfil) => (
                                 <tr key={perfil.id} className="">
                                     <th scope="row" className="px-6 py-4 ">
                                         {perfil.id}
@@ -162,7 +204,7 @@ const Vista = ({ auth, perfiles }) => {
                 </div>
 
                 <div className="mb-auto">
-                    <CreatePerfil closeModal={closeModal}/>
+                <CreatePerfil closeModal={closeModal}/>                
                 </div>
             </Modal>
             <Modal

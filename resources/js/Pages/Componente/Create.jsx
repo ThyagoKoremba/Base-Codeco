@@ -9,7 +9,7 @@ const CreateComponente = ({ closeModal }) => {
 
     const initialValues = {
         nombre: "",
-        descripcion: "",
+        componente_item_proceso: "",
         informacion: "",
         url: "",
         sn_activo: true,
@@ -21,6 +21,7 @@ const CreateComponente = ({ closeModal }) => {
         e.preventDefault();
         post(route('componente.store'), {
             onSuccess: () => {
+                window.location.reload();
                 closeModal();
             },
         });
@@ -49,18 +50,18 @@ const CreateComponente = ({ closeModal }) => {
                                                         <InputError message={errors.nombre} className="mt-2" />
                                                     </div>
                                                     <div className='col-6'>
-                                                        <label htmlFor="descripcion" className='form-label'>Descripción</label>
+                                                        <label htmlFor="componente_item_proceso" className='form-label'>Descripción</label>
 
                                                         <input
-                                                            id="descripcion"
+                                                            id="componente_item_proceso"
                                                             type="text"
-                                                            name="descripcion"
-                                                            value={data.descripcion}
+                                                            name="componente_item_proceso"
+                                                            value={data.componente_item_proceso}
                                                             className="form-control"
-                                                            onChange={(e) => setData('descripcion', e.target.value)}
+                                                            onChange={(e) => setData('componente_item_proceso', e.target.value)}
                                                         />
 
-                                                        <InputError message={errors.descripcion} className="mt-2" />
+                                                        <InputError message={errors.componente_item_proceso} className="mt-2" />
                                                     </div>
 
                                                     <div className='col-6 my-3'>

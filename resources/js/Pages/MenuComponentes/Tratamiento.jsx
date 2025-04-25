@@ -60,11 +60,11 @@ const Create = ({ auth }) => {
         }));
     };
 
-    const ordenarByOrden = () => { 
+    const ordenarByOrden = () => {
         setData((prevData) => {
             const componentesOrdenados = [...prevData.componentes].sort((a, b) => {
                 const ordenA = prevData.componentesOrden[a.id] || 0;
-                const ordenB = prevData.componentesOrden[b.id] || 0;    
+                const ordenB = prevData.componentesOrden[b.id] || 0;
                 return ordenA - ordenB;
             });
             return {
@@ -358,7 +358,7 @@ const Create = ({ auth }) => {
                                                 <input
                                                     type="number"
                                                     className="form-control form-control-sm mx-3"
-                                                    value={Math.max(inicioOrden, 1)} 
+                                                    value={Math.max(inicioOrden, 1)}
                                                     onChange={(e) => setInicioOrden(parseInt(e.target.value) || 0)} // Actualiza el estado directamente
                                                     style={{
                                                         width: '60px',
@@ -376,18 +376,18 @@ const Create = ({ auth }) => {
                                                         height: '30px',
                                                     }}
                                                 />
-                                            
-                                            <button
-                                                type='button'
-                                                className="btn btn-primary col-2 mx-3"
-                                                style={{
-                                                    width: '70px',
-                                                    height: '40px',
-                                                }}
-                                                onClick={() => cambiarOrden(inicioOrden, intervalo)}
-                                            >
-                                                Fijar
-                                            </button>
+
+                                                <button
+                                                    type='button'
+                                                    className="btn btn-primary col-2 mx-3"
+                                                    style={{
+                                                        width: '70px',
+                                                        height: '40px',
+                                                    }}
+                                                    onClick={() => cambiarOrden(inicioOrden, intervalo)}
+                                                >
+                                                    Fijar
+                                                </button>
                                             </div>
                                             <button
                                                 type='button'
@@ -410,9 +410,9 @@ const Create = ({ auth }) => {
                                                         <table className="table table-striped table-hover align-middle">
                                                             <thead className="sticky-top">
                                                                 <tr>
-                                                                    <th scope="col">ID</th>
                                                                     <th scope="col">Nombre</th>
-                                                                    <th scope="col">Descripción</th>
+                                                                    <th scope="col">ID</th>
+                                                                    <th scope="col">Item/Proceso/Botón</th>
                                                                     <th scope="col">URL</th>
                                                                     <th scope="col">Orden</th>
                                                                     <th scope="col">Activo</th>
@@ -421,8 +421,8 @@ const Create = ({ auth }) => {
                                                             <tbody>
                                                                 {data.componentes.map((componente, index) => (
                                                                     <tr key={`${componente.id}-${index}`}>
-                                                                        <th scope="row">{componente.id}</th>
                                                                         <td>{componente.nombre}</td>
+                                                                        <td>{componente.id}</td>
                                                                         <td>{componente.componente_item_proceso}</td>
                                                                         <td>{componente.url}</td>
                                                                         <td>
@@ -455,24 +455,24 @@ const Create = ({ auth }) => {
                                                     </div>
                                                     <div className='col-5 d-flex justify-content-between'>
                                                         <div>
-                                                        <button type="button" className="btn btn-secondary" onClick={handleReset}>
-                                                            Cancelar
-                                                        </button>
+                                                            <button type="button" className="btn btn-secondary" onClick={handleReset}>
+                                                                Cancelar
+                                                            </button>
                                                         </div>
                                                         <div>
-                                                        <button
-                                                            type="submit"
-                                                            className="btn btn-primary mx-5"
-                                                            disabled={!data.id_menu}
-                                                        >
-                                                            Aplicar
-                                                        </button>
+                                                            <button
+                                                                type="submit"
+                                                                className="btn btn-primary mx-5"
+                                                                disabled={!data.id_menu}
+                                                            >
+                                                                Aplicar
+                                                            </button>
 
-                                                        <button type='submit'
-                                                            className='btn btn-primary'
-                                                            disabled={!data.id_menu}
-                                                            onClick={handleGuardarCambios}>Guardar</button>
-                                                            </div>
+                                                            <button type='submit'
+                                                                className='btn btn-primary'
+                                                                disabled={!data.id_menu}
+                                                                onClick={handleGuardarCambios}>Guardar</button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </>
