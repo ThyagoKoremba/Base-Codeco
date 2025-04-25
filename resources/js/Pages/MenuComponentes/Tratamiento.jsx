@@ -60,6 +60,21 @@ const Create = ({ auth }) => {
         }));
     };
 
+    const ordenarByOrden = () => { 
+        setData((prevData) => {
+            const componentesOrdenados = [...prevData.componentes].sort((a, b) => {
+                const ordenA = prevData.componentesOrden[a.id] || 0;
+                const ordenB = prevData.componentesOrden[b.id] || 0;
+                return ordenA - ordenB;
+            });
+            return {
+                ...prevData,
+                componentes: componentesOrdenados,
+            };
+        });
+    };
+
+
     const cambiarOrden = (inicioOrden, intervalo) => {
         setData((prevData) => {
             const nuevosOrdenes = {};
@@ -83,10 +98,9 @@ const Create = ({ auth }) => {
             ...prevData,
             componentesOrden: {
                 ...prevData.componentesOrden,
-                [componenteId]: parseInt(valor), // Asegúrate de convertir el valor a número
+                [componenteId]: parseInt(valor, 10), // Convertir el valor a número
             },
         }));
-        cambiarOrden();
     };
 
     //Guardar Cambios en las relacion menu-componentes
@@ -342,7 +356,7 @@ const Create = ({ auth }) => {
                                                 <input
                                                     type="number"
                                                     className="form-control form-control-sm mx-3"
-                                                    value={inicioOrden} 
+                                                    value={inicioOrden}
                                                     onChange={(e) => setInicioOrden(parseInt(e.target.value) || 0)} // Actualiza el estado directamente
                                                     style={{
                                                         width: '60px',
@@ -353,23 +367,36 @@ const Create = ({ auth }) => {
                                                 <input
                                                     type="number"
                                                     className="form-control form-control-sm mx-3"
-                                                    value={intervalo} 
+                                                    value={intervalo}
                                                     onChange={(e) => setIntervalo(parseInt(e.target.value) || 0)} // Actualiza el estado directamente
                                                     style={{
                                                         width: '60px',
                                                         height: '30px',
                                                     }}
                                                 />
+                                            
+                                            <button
+                                                type='button'
+                                                className="btn btn-primary col-2 mx-3"
+                                                style={{
+                                                    width: '70px',
+                                                    height: '40px',
+                                                }}
+                                                onClick={() => cambiarOrden(inicioOrden, intervalo)}
+                                            >
+                                                Fijar
+                                            </button>
                                             </div>
                                             <button
+                                                type='button'
                                                 className="btn btn-primary col-2 mx-3"
                                                 style={{
                                                     width: '90px',
                                                     height: '40px',
                                                 }}
-                                                onClick={() => cambiarOrden(inicioOrden, intervalo)}
+                                                onClick={ordenarByOrden}
                                             >
-                                                Aplicar
+                                                Ordenar
                                             </button>
                                         </div>
                                     </div>
@@ -390,10 +417,10 @@ const Create = ({ auth }) => {
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                {data.componentes.map((componente) => (
-                                                                    <tr key={componente.id}>
+                                                                {data.componentes.map((componente, index) => (
+                                                                    <tr key={`${componente.id}-${index}`}>
                                                                         <th scope="row">{componente.id}</th>
-                                                                        <td>{componente.nombre}</td>    
+                                                                        <td>{componente.nombre}</td>
                                                                         <td>{componente.componente_item_proceso}</td>
                                                                         <td>{componente.url}</td>
                                                                         <td>
@@ -423,7 +450,7 @@ const Create = ({ auth }) => {
                                                 <div className="row d-flex justify-content-end mt-3">
                                                     <div className='col-6'>
                                                         <button type="button" className="btn btn-secondary" onClick={handleReset}>
-                                                            Limpiar
+                                                            Cancelar
                                                         </button>
                                                     </div>
                                                     <div className='col-3'>
@@ -633,5 +660,6 @@ const Create = ({ auth }) => {
 
     );
 };
+
 
 export default Create;
