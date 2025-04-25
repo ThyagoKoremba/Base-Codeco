@@ -31,7 +31,7 @@ const Create = ({ auth }) => {
     const [menuCurrentPage, setMenuCurrentPage] = useState(1);
     const [menuLastPage, setMenuLastPage] = useState(1);
     const [nombreMenu, setNombreMenu] = useState('');
-    const [inicioOrden, setInicioOrden] = useState(0);
+    const [inicioOrden, setInicioOrden] = useState(1);
     const [intervalo, setIntervalo] = useState(1);
 
     const { data, setData, post, reset } = useForm(initialValues);
@@ -64,7 +64,7 @@ const Create = ({ auth }) => {
         setData((prevData) => {
             const componentesOrdenados = [...prevData.componentes].sort((a, b) => {
                 const ordenA = prevData.componentesOrden[a.id] || 0;
-                const ordenB = prevData.componentesOrden[b.id] || 0;
+                const ordenB = prevData.componentesOrden[b.id] || 0;    
                 return ordenA - ordenB;
             });
             return {
@@ -127,6 +127,8 @@ const Create = ({ auth }) => {
         setComponenteSeleccionado(null);
         setNombreComponente('');
         setMenuInformacion('');
+        setInicioOrden(0);
+        setIntervalo(1);
     };
 
 
@@ -356,7 +358,7 @@ const Create = ({ auth }) => {
                                                 <input
                                                     type="number"
                                                     className="form-control form-control-sm mx-3"
-                                                    value={inicioOrden}
+                                                    value={Math.max(inicioOrden, 1)} 
                                                     onChange={(e) => setInicioOrden(parseInt(e.target.value) || 0)} // Actualiza el estado directamente
                                                     style={{
                                                         width: '60px',
@@ -367,7 +369,7 @@ const Create = ({ auth }) => {
                                                 <input
                                                     type="number"
                                                     className="form-control form-control-sm mx-3"
-                                                    value={intervalo}
+                                                    value={Math.max(intervalo, 1)}
                                                     onChange={(e) => setIntervalo(parseInt(e.target.value) || 0)} // Actualiza el estado directamente
                                                     style={{
                                                         width: '60px',
@@ -449,24 +451,28 @@ const Create = ({ auth }) => {
                                                 </div>
                                                 <div className="row d-flex justify-content-end mt-3">
                                                     <div className='col-6'>
+
+                                                    </div>
+                                                    <div className='col-5 d-flex justify-content-between'>
+                                                        <div>
                                                         <button type="button" className="btn btn-secondary" onClick={handleReset}>
                                                             Cancelar
                                                         </button>
-                                                    </div>
-                                                    <div className='col-3'>
+                                                        </div>
+                                                        <div>
                                                         <button
                                                             type="submit"
-                                                            className="btn btn-primary"
+                                                            className="btn btn-primary mx-5"
                                                             disabled={!data.id_menu}
                                                         >
                                                             Aplicar
                                                         </button>
-                                                    </div>
-                                                    <div className='col-3'>
+
                                                         <button type='submit'
                                                             className='btn btn-primary'
                                                             disabled={!data.id_menu}
-                                                            onClick={handleGuardarCambios}>Guardar Cambios</button>
+                                                            onClick={handleGuardarCambios}>Guardar</button>
+                                                            </div>
                                                     </div>
                                                 </div>
                                             </>
