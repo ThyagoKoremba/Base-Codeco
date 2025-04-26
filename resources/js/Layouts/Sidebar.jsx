@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import { motion } from "framer-motion";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
@@ -8,6 +8,7 @@ import Authenticated from "./AuthenticatedLayout";
 export default function Sidebar({ children }) {
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [openMenus, setOpenMenus] = useState({});
+    const { url: currentPageUrl } = usePage(); // Obtener la URL actual
 
     const data = JSON.parse(localStorage.getItem('perfilesMenusComponentes'));
     const [perfilesMenusComponentes, setPerfilesMenusComponentes] = useState(data);
@@ -30,30 +31,15 @@ export default function Sidebar({ children }) {
         }
     }, [perfilesMenusComponentes]);
 
-
-
-    /*   // Función para obtener los datos del backend
-      const fetchPerfilesMenusComponentes = async () => {
-          try {
-              const response = await fetch('/user/perfil-menu-componentes');
-              const data = await response.json();
-              setPerfilesMenusComponentes(data);
-          } catch (error) {
-              console.error('Error fetching perfiles, menus, and componentes:', error);
-          }
-      };
-  
-      // Llamar a la función al montar el componente
-      useEffect(() => {
-          fetchPerfilesMenusComponentes();
-      }, []);  */
-
-    // Función para alternar la visibilidad de los menús
+    // Función para alternar la visibilidad de los menús, cerrando los demás
     const toggleMenu = (menuId) => {
-        setOpenMenus((prevState) => ({
-            ...prevState,
-            [menuId]: !prevState[menuId],
-        }));
+        setOpenMenus((prevState) => {
+            const newState = {};
+            if (!prevState[menuId]) {
+                newState[menuId] = true;
+            }
+            return newState;
+        });
     };
 
     const sidebarVariants = {
@@ -98,7 +84,7 @@ export default function Sidebar({ children }) {
                                         <div key={`${perfil.id_perfil}-${menu.menu}-${index}`}>
                                             {/* Botón para desplegar el menú */}
                                             <button
-                                                className="btn btn-link nav-link dropdown-toggle text-white"
+                                                className="btn btn-link nav-link  text-white"
                                                 type="button"
                                                 onClick={() => toggleMenu(menu.menu)}
                                                 aria-expanded={openMenus[menu.menu] ? "true" : "false"}
@@ -111,7 +97,10 @@ export default function Sidebar({ children }) {
                                                 <ul className="list-unstyled ps-3">
                                                     {Object.entries(menu.componentes).map(([nombre, url]) => (
                                                         <li key={`${menu.menu}-${nombre}`}>
-                                                            <Link className="dropdown-item" href={url}>
+                                                            <Link
+                                                                className={`dropdown-item ${currentPageUrl === url ? 'active-link' : ''}`}
+                                                                href={url}
+                                                            >
                                                                 <small>{nombre}</small>
                                                             </Link>
                                                         </li>

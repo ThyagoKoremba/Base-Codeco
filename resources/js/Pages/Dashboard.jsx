@@ -30,10 +30,15 @@ export default function Dashboard({ auth }) {
       
 
 
-    // Guardar usuario en localStorage
+    // Guardar usuario en localStorage y reiniciar una vez al arrancar
     useEffect(() => {
         localStorage.setItem('user', JSON.stringify(userData));
         sessionStorage.setItem('user', JSON.stringify(userData));
+
+        if (!sessionStorage.getItem('hasReloaded')) {
+            sessionStorage.setItem('hasReloaded', 'true');
+            window.location.reload();
+        }
     }, [userData]);
 
     // Función para obtener los datos del backend
