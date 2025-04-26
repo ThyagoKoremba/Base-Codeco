@@ -98,7 +98,7 @@ export default function Sidebar({ children }) {
                                                     {Object.entries(menu.componentes).map(([nombre, url]) => (
                                                         <li key={`${menu.menu}-${nombre}`}>
                                                             <Link
-                                                                className={`dropdown-item ${currentPageUrl === url ? 'active-link' : ''}`}
+                                                                className={`btn ${currentPageUrl === url ? 'active-link' : ''}`}
                                                                 href={url}
                                                             >
                                                                 <small>{nombre}</small>
