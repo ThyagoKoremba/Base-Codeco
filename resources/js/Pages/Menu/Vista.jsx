@@ -137,7 +137,10 @@ const Vista = ({ auth, menus }) => {
                                         {menu.abreviatura}
                                     </td>
                                     <td className="px-6 py-4">
-                                        {menu.sn_activo === 1 ? 'Si' : 'No'}
+                                        {menu.sn_activo === 1 ? 
+                                        <p className="text-success">Si</p>
+
+                                        : <p className="text-danger">No</p>}
                                     </td>
                                     <td>
                                         <div className="dropdown">

@@ -24,7 +24,7 @@ export default function Authenticated({ user }) {
                     <ul className="list-unstyled ps-3">
                         <li>
                             <Link className="dropdown-item" href={route('profile.edit')}>
-                                <small className="">Profile</small>
+                                <small className="">Perfil</small>
                             </Link>
                             <Link
                                 className="dropdown-item"

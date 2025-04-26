@@ -29,11 +29,19 @@ class PerfilMenuController extends Controller
     {
         $query = $request->input('query');
         $page = $request->input('page', 1);
-
-        $results = Perfil::where('nombre', 'like', "%$query%")
+    
+        $results = Perfil::leftJoin('perfiles_menus', 'perfiles.id', '=', 'perfiles_menus.id_perfil')
+            ->select(
+                'perfiles.id',
+                'perfiles.nombre',
+                'perfiles.abreviatura',
+                'perfiles.sn_activo',
+                DB::raw('CASE WHEN perfiles_menus.id_perfil IS NULL THEN NULL ELSE perfiles_menus.id_perfil END as relacion')
+            )
+            ->where('perfiles.nombre', 'like', "%$query%") // Corrige la posición del where
             ->paginate(5, ['*'], 'page', $page)
             ->appends(['query' => $query]);
-
+    
         return response()->json($results);
     }
 
@@ -75,18 +83,4 @@ class PerfilMenuController extends Controller
             return response()->json(['data' => $data]);
     }
 
-
-    public function getPerfilesWithNullRelation()
-    {
-        $data = Perfil::leftJoin('perfiles_menus', 'perfiles.id', '=', 'perfiles_menus.id_perfil')
-            ->select(
-                'perfiles.id',
-                'perfiles.nombre',
-                'perfiles.abreviatura',
-                'perfiles.sn_activo',
-                DB::raw('CASE WHEN perfiles_menus.id_perfil IS NULL THEN NULL ELSE perfiles_menus.id_perfil END as relacion')
-            )
-            ->get();
-        return response()->json(['data' => $data]);
-    }
 }
