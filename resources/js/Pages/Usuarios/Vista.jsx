@@ -3,6 +3,7 @@ import './../../../css/app.css';
 import Modal from 'react-modal';
 import EditUser from './Edit';
 import DashboardLayout from '@/Layouts/Sidebar';
+import CreateUser from './Create';
 Modal.setAppElement('#app');
 
 
@@ -11,23 +12,48 @@ const Vista = ({ auth, usuarios }) => {
     const [isVerModalOpen, setIsVerModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen]=useState(false);
+    const [searchQuery, setSearchQuery]=useState("");
+    const [filteredItems,setFilteredItems]=useState(usuarios)
+
+
+    const limpiarSearch=()=>{
+        setSearchQuery("");
+        setFilteredItems(usuarios)
+    }
+
+    const handleSearch = () => {
+        const resultados = usuarios.filter((usuarios) =>
+            usuarios.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredItems(resultados);
+    };
 
     const openVerModal = (item) => {
         setSelectedItem(item);
         setIsVerModalOpen(true);
     }
 
+    
+
     const openEditModal = (usuario) => {
         setSelectedItem(usuario); // Establece el menú seleccionado
         setIsEditModalOpen(true); // Abre el modal de edición
     };
 
-    const closeEditModal = () => {
-        setIsEditModalOpen(false);
-        setSelectedItem(null); // Limpia el menú seleccionado
-    }
+
     const closeVerModal = () => {
         setIsVerModalOpen(false);
+        setSelectedItem(null); // Limpia el menú seleccionado
+    }
+
+    const openModal=()=>{
+        setIsModalOpen(true);
+    }
+
+    const closeModal=()=>{
+        setIsModalOpen(false);
+        setIsEditModalOpen(false);
         setSelectedItem(null); // Limpia el menú seleccionado
     }
 
@@ -40,8 +66,43 @@ const Vista = ({ auth, usuarios }) => {
     return (
         <>
 
-            <div className='d-flex justify-content-start'>
-                <h2 className="">Usuarios</h2>
+<div className='d-flex justify-content-between'>
+                    <h2 className="">Usuarios</h2>
+                    <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={openModal}
+                    >
+                        Agregar Usuario
+                    </button>
+                </div>
+                <div className='row mx-4 my-4'>
+                <div className="col-3">
+                    <div className='input-group'>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Buscar por Nombre"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)} 
+                        />
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleSearch} 
+                        >
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+                <div className="col-2">
+                    <button 
+                    className="btn btn-secondary"
+                    onClick={limpiarSearch}
+                    >
+                        Todos
+                    </button>
+                </div>
             </div>
 
             <div className="tabla-index">
@@ -67,7 +128,7 @@ const Vista = ({ auth, usuarios }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {usuarios?.map((usuario) => (
+                            {filteredItems?.map((usuario) => (
                                 <tr key={usuario.id} className="">
                                     <th scope="row" className="px-6 py-4 ">
                                         {usuario.id}
@@ -178,8 +239,8 @@ const Vista = ({ auth, usuarios }) => {
                 </div>
             </Modal>
             <Modal
-                isOpen={isEditModalOpen}
-                onRequestClose={closeEditModal}
+                isOpen={isEditModalOpen ? isEditModalOpen : isModalOpen}
+                onRequestClose={closeModal}
                 contentLabel={'Editar'}
                 style={{
                     content: {
@@ -197,20 +258,24 @@ const Vista = ({ auth, usuarios }) => {
                 overlayClassName="modal-overlay"
             >
                 <div className="modal-header d-flex justify-content-between">
-                    <h3 className="modal-title">Editar Usuario</h3>
+                    <h3 className="modal-title">{isEditModalOpen ? "Editar Usuario" : "Crear Usuario"}</h3>
                     <button
                         type="button"
                         className="btn-close"
-                        onClick={closeEditModal}
+                        onClick={closeModal}
                         aria-label="Cerrar"
                     ></button>
                 </div>
 
                 <div className="mb-auto">
+                    {isEditModalOpen ? 
                     <EditUser
-                        closeModal={closeEditModal}
+                        closeModal={closeModal}
                         usuario={selectedItem}
                     />
+                    : <CreateUser/>}
+
+
                 </div>
             </Modal>
         </>

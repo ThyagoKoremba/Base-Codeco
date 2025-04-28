@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Usuario\UsuarioRequest;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -18,6 +20,18 @@ class UserController extends Controller
     public function vista(){
         $usuarios = User::all();
         return Inertia::render('Usuarios/Vista', compact('usuarios'));
+    }
+
+    public function store(UsuarioRequest $request){
+        
+        $usuario = new User;
+        $usuario->name = $request->name;
+        $usuario->email = $request->email;
+        $usuario->password= Hash::make($request->password);
+        $usuario->save();
+
+        return redirect()->route('usuario.vista');
+
     }
 
     public function update(Request $request, User $usuario){
