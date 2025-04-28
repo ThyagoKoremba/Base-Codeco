@@ -23,6 +23,13 @@
     border-radius: 5px;
 }
 
-.login-width{
-    width: 35vw;
+/* styles.css */
+.active-link {
+    background-color: rgba(0, 0, 0, 0.1); /* Un fondo ligeramente oscuro */
+    color: white !important; /* Asegura que el texto sea blanco y tenga prioridad */
+    font-weight: bold; /* Opcional: texto en negrita */
+}
+
+.active-link:hover {
+    background-color: rgba(0, 0, 0, 0.2); /* Oscurecer un poco al pasar el ratón (opcional) */
 }
