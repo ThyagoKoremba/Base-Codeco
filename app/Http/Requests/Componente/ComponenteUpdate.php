@@ -28,7 +28,7 @@ class ComponenteUpdate extends FormRequest
             'regex:/^[\p{L}\p{N}\d\s\.\-]{1,180}$/u',
             Rule::unique('componentes','nombre')->ignore($this->componente->id)
         ],
-            'descripcion'=>'regex:/^[\p{L}\p{N}\d\s\.\-]{1,100}$/u',
+            'componente_item_proceso'=>'regex:/^[\p{L}\p{N}\d\s\.\-]{1,100}$/u',
             'informacion'=>'regex:/^[\p{L}\p{N}\d\s\.\-]{1,180}$/u',
             'url'=>Rule::unique('componentes','url')->ignore($this->componente->id),
             'sn_activo'=>'boolean',

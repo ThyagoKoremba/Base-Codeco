@@ -3,28 +3,42 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import InputError from '@/Components/InputError';
 import DashboardLayout from '@/Layouts/Sidebar';
+import { useState } from 'react';
 
 
 const CreateComponente = ({ closeModal }) => {
 
     const initialValues = {
         nombre: "",
-        descripcion: "",
+        componente_item_proceso: "",
         informacion: "",
         url: "",
+        sn_modal:false,
         sn_activo: true,
     }
 
     const { data, errors, setData, post, reset } = useForm(initialValues)
-
+    const [esModal, setEsModal]=useState(false);
     const submit = (e) => {
         e.preventDefault();
         post(route('componente.store'), {
             onSuccess: () => {
+                window.location.reload();
                 closeModal();
             },
         });
     }
+
+    const DesactivarModal = () => {
+        const nuevoEstado = !data.sn_modal; // Cambia el estado del checkbox
+        setData('sn_modal', nuevoEstado); // Actualiza el estado de sn_modal
+
+        if (nuevoEstado) {
+            setData('url', ''); // Limpia el campo URL si sn_modal se desactiva
+        }
+
+        setEsModal(nuevoEstado); // Actualiza el estado local para deshabilitar el input
+    };
 
     return (
             <div className="py-3">
@@ -49,18 +63,18 @@ const CreateComponente = ({ closeModal }) => {
                                                         <InputError message={errors.nombre} className="mt-2" />
                                                     </div>
                                                     <div className='col-6'>
-                                                        <label htmlFor="descripcion" className='form-label'>Descripción</label>
+                                                        <label htmlFor="componente_item_proceso" className='form-label'>Descripción</label>
 
                                                         <input
-                                                            id="descripcion"
+                                                            id="componente_item_proceso"
                                                             type="text"
-                                                            name="descripcion"
-                                                            value={data.descripcion}
+                                                            name="componente_item_proceso"
+                                                            value={data.componente_item_proceso}
                                                             className="form-control"
-                                                            onChange={(e) => setData('descripcion', e.target.value)}
+                                                            onChange={(e) => setData('componente_item_proceso', e.target.value)}
                                                         />
 
-                                                        <InputError message={errors.descripcion} className="mt-2" />
+                                                        <InputError message={errors.componente_item_proceso} className="mt-2" />
                                                     </div>
 
                                                     <div className='col-6 my-3'>
@@ -79,6 +93,22 @@ const CreateComponente = ({ closeModal }) => {
                                                     </div>
                                                 </div>
                                                 <hr />
+
+                                                <div className='mb-3'>
+                                                    <label htmlFor="sn_modal" className='form-label'>Modal</label>
+
+                                                    <input
+                                                        id="sn_modal"
+                                                        type="checkbox"
+                                                        name="sn_modal"
+                                                        checked={data.sn_modal}
+                                                        className="form-check-input mx-2"
+                                                        onChange={DesactivarModal}
+                                                    />
+
+                                                    <InputError message={errors.sn_modal} className="mt-2" />
+                                                </div>
+
                                                 <div>
                                                     <label htmlFor="url" className='form-label'>URL</label>
 
@@ -89,6 +119,7 @@ const CreateComponente = ({ closeModal }) => {
                                                         value={data.url}
                                                         className="form-control"
                                                         onChange={(e) => setData('url', e.target.value)}
+                                                        disabled={esModal}
                                                     />
 
                                                     <InputError message={errors.url} className="mt-2" />

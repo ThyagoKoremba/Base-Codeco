@@ -2,22 +2,22 @@ import React from 'react';
 import { useForm } from '@inertiajs/react';
 import InputError from '@/Components/InputError';
 
-const EditMenu = ({ menu, closeModal }) => {
+const CreateUser = ({ closeModal }) => {
     const initialValues = {
-        nombre: menu?.nombre || '',
-        abreviatura: menu?.abreviatura || '',
-        informacion: menu?.informacion || '',
+        name:'',
+        email: '',
+        password:''
     };
 
     const { data, errors, setData, put } = useForm(initialValues);
 
     const submit = (e) => {
         e.preventDefault();
-        put(route('menu.update', menu?.id), {
+        put(route('usuario.store'), {
             onSuccess: () => {
                 window.location.reload();
-                closeModal(); // Cierra el modal al guardar exitosamente
-            },
+                closeModal(); // Cierra el modal
+            }
         });
     };
 
@@ -30,40 +30,40 @@ const EditMenu = ({ menu, closeModal }) => {
                     <form onSubmit={submit}>
                         <div className="mb-3 row">
                             <div className="col-6">
-                                <label htmlFor="nombre" className="form-label">Nombre</label>
+                                <label htmlFor="name" className="form-label">Nombre</label>
                                 <input
-                                    id="nombre"
+                                    id="name"
                                     type="text"
-                                    name="nombre"
-                                    value={data.nombre}
+                                    name="name"
+                                    value={data.name}
                                     className="form-control"
-                                    onChange={(e) => setData('nombre', e.target.value)}
+                                    onChange={(e) => setData('name', e.target.value)}
                                 />
-                                <InputError message={errors.nombre} className="mt-2" />
+                                <InputError message={errors.name} className="mt-2" />
                             </div>
                             <div className="col-6">
-                                <label htmlFor="abreviatura" className="form-label">Abreviatura</label>
+                                <label htmlFor="email" className="form-label">Email</label>
                                 <input
-                                    id="abreviatura"
+                                    id="email"
                                     type="text"
-                                    name="abreviatura"
-                                    value={data.abreviatura}
+                                    name="email"
+                                    value={data.email}
                                     className="form-control"
-                                    onChange={(e) => setData('abreviatura', e.target.value)}
+                                    onChange={(e) => setData('email', e.target.value)}
                                 />
-                                <InputError message={errors.abreviatura} className="mt-2" />
+                                <InputError message={errors.email} className="mt-2" />
                             </div>
-                            <div className="col-6 my-3">
-                                <label htmlFor="informacion" className="form-label">Información</label>
+                            <div className="col-6">
+                                <label htmlFor="password" className="form-label">Contraseña</label>
                                 <input
-                                    id="informacion"
+                                    id="password"
                                     type="text"
-                                    name="informacion"
-                                    value={data.informacion}
+                                    name="password"
+                                    value={data.password}
                                     className="form-control"
-                                    onChange={(e) => setData('informacion', e.target.value)}
+                                    onChange={(e) => setData('password', e.target.value)}
                                 />
-                                <InputError message={errors.informacion} className="mt-2" />
+                                <InputError message={errors.password} className="mt-2" />
                             </div>
                         </div>
                         <div className="row">
@@ -78,4 +78,4 @@ const EditMenu = ({ menu, closeModal }) => {
     );
 };
 
-export default EditMenu;
+export default CreateUser;

@@ -3,9 +3,8 @@ import './../../../css/app.css';
 import CreateComponente from './Create';
 import Modal from 'react-modal';
 import EditComponente from './Edit';
-import DashboardLayout from '@/Layouts/Sidebar';
-import ComponenteModal from '@/Components/ComponenteModal';
 import VerificarComponente from '@/Components/VerificarComponente';
+import ComponenteModalOURL from '@/Components/ComponenteModal';
 
 Modal.setAppElement('#app');
 
@@ -14,6 +13,20 @@ const Vista = ({ auth, componentes }) => {
 
     const [isVerModalOpen, setIsVerModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filteredItems, setFilteredItems] = useState(componentes);
+
+    const handleSearch = () => {
+        const resultados = componentes.filter((componente) =>
+            componente.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredItems(resultados);
+    };
+
+    const limpiarSearch=()=>{
+        setSearchQuery("");
+        setFilteredItems(componentes)
+    }
 
     const openVerModal = (item) => {
         setSelectedItem(item);
@@ -44,7 +57,7 @@ const Vista = ({ auth, componentes }) => {
         setIsModalOpen(true);
     };
 
-    
+
     const closeModal = () => {
         setIsModalOpen(false);
     };
@@ -54,21 +67,46 @@ const Vista = ({ auth, componentes }) => {
 
             <div className="d-flex justify-content-between mb-5">
                 <h2 className="">Componentes</h2>
-                <ComponenteModal nombre={"NuevoComponente"} onclick={openModal} nombreBoton={'Nuevo Componente'}/>
-    
-
-
+                <ComponenteModalOURL nombre={"NuevoComponente"} onclick={openModal} nombreBoton={'Nuevo'} />
+            </div>
+            <div className='row mx-4 my-4'>
+                <div className="col-3">
+                    <div className='input-group'>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Buscar por Nombre"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)} 
+                        />
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleSearch} 
+                        >
+                            Buscar
+                        </button>
+                    </div>
+                </div>
+                <div className="col-2">
+                    <button 
+                    className="btn btn-secondary"
+                    onClick={limpiarSearch}
+                    >
+                        Todos
+                    </button>
+                </div>
             </div>
 
 
-            <div className="tabla-index">
+            <div className="tabla-pantalla">
                 <div className="table-responsive overflow-visible">
                     <table className="table table-striped table-hover align-middle">
                         <thead className="sticky-top">
                             <tr>
                                 <th scope="col">ID</th>
                                 <th scope="col">Nombre</th>
-                                <th scope="col">Descripción</th>
+                                <th scope="col">Item/Proceso/Botón</th>
                                 <th scope="col">URL</th>
                                 <th scope="col">Modal</th>
                                 <th scope="col">Activo</th>
@@ -76,26 +114,14 @@ const Vista = ({ auth, componentes }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {componentes?.map((componente) => (
-                                <tr key={componente.id} className="">
-                                    <th scope="row" className="px-6 py-4">
-                                        {componente.id}
-                                    </th>
-                                    <td scope="row" className="px-6 py-4">
-                                        {componente.nombre}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {componente.componente_item_proceso}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {componente.url}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {componente.sn_modal === 1 ? 'Si' : 'No'}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        {componente.sn_activo === 1 ? 'Si' : 'No'}
-                                    </td>
+                            {filteredItems.map((componente) => (
+                                <tr key={componente.id}>
+                                    <th scope="row">{componente.id}</th>
+                                    <td>{componente.nombre}</td>
+                                    <td>{componente.componente_item_proceso}</td>
+                                    <td>{componente.url}</td>
+                                    <td>{componente.sn_modal === 1 ? 'Si' : 'No'}</td>
+                                    <td>{componente.sn_activo === 1 ? 'Si' : 'No'}</td>
                                     <td>
                                         <div className="dropdown">
                                             <button
@@ -122,14 +148,14 @@ const Vista = ({ auth, componentes }) => {
                                                 aria-labelledby="dropdownMenu2"
                                             >
                                                 <VerificarComponente nombre={'EditarComponente'}>
-                                                <a
-                                                    className="dropdown-item"
-                                                    onClick={() =>
-                                                        openEditModal(componente)
-                                                    }
-                                                >
-                                                    Editar
-                                                </a>
+                                                    <a
+                                                        className="dropdown-item"
+                                                        onClick={() =>
+                                                            openEditModal(componente)
+                                                        }
+                                                    >
+                                                        Editar
+                                                    </a>
                                                 </VerificarComponente>
                                                 <a
                                                     className="dropdown-item"
@@ -250,8 +276,8 @@ const Vista = ({ auth, componentes }) => {
 
                                                 <hr />
                                                 <div className="row">
-                                                <p className="col-6">Modal: <span className="text-muted">{selectedItem.sn_modal === 1 ? 'Si' : 'No'}</span></p>
-                                                <p className="col-6">Activo: <span className="text-muted">{selectedItem.sn_activo === 1 ? 'Si' : 'No'}</span></p>
+                                                    <p className="col-6">Modal: <span className="text-muted">{selectedItem.sn_modal === 1 ? 'Si' : 'No'}</span></p>
+                                                    <p className="col-6">Activo: <span className="text-muted">{selectedItem.sn_activo === 1 ? 'Si' : 'No'}</span></p>
                                                 </div>
                                             </>
                                         )}

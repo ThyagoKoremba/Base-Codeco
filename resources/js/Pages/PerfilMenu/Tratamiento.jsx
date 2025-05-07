@@ -71,16 +71,13 @@ const Create = ({ auth }) => {
     const fetchPerfilSearchResults = async (page = 1) => {
         const response = await fetch(`/configuracion/perfil-menu/search-perfil?query=${perfilSearchQuery}&page=${page}`);
         const data = await response.json();
-        fetchPerfilnulls();
+
+        setPerfilSearchResults(data.data);
         setPerfilCurrentPage(data.current_page);
         setPerfilLastPage(data.last_page);
     };
 
-    const fetchPerfilnulls = async () => {
-        const response = await fetch(`/configuracion/perfil-menu/perfil-nulls`);
-        const data = await response.json();
-        setPerfilSearchResults(data.data);
-    };
+
 
     // FETCH para traer los Menus
     const fetchMenuSearchResults = async (page = 1) => {
@@ -379,7 +376,7 @@ const Create = ({ auth }) => {
                                                     : perfilCurrentPage} de{" "}
                                                 {isMenuModalOpen
                                                     ? menuLastPage
-                                                    : menuLastPage}
+                                                    : perfilLastPage}
                                             </span>
                                             <button
                                                 type="button"

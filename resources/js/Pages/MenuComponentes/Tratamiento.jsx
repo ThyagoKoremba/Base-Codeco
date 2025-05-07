@@ -31,7 +31,7 @@ const Create = ({ auth }) => {
     const [menuCurrentPage, setMenuCurrentPage] = useState(1);
     const [menuLastPage, setMenuLastPage] = useState(1);
     const [nombreMenu, setNombreMenu] = useState('');
-    const [inicioOrden, setInicioOrden] = useState(0);
+    const [inicioOrden, setInicioOrden] = useState(1);
     const [intervalo, setIntervalo] = useState(1);
 
     const { data, setData, post, reset } = useForm(initialValues);
@@ -60,6 +60,21 @@ const Create = ({ auth }) => {
         }));
     };
 
+    const ordenarByOrden = () => {
+        setData((prevData) => {
+            const componentesOrdenados = [...prevData.componentes].sort((a, b) => {
+                const ordenA = prevData.componentesOrden[a.id] || 0;
+                const ordenB = prevData.componentesOrden[b.id] || 0;
+                return ordenA - ordenB;
+            });
+            return {
+                ...prevData,
+                componentes: componentesOrdenados,
+            };
+        });
+    };
+
+
     const cambiarOrden = (inicioOrden, intervalo) => {
         setData((prevData) => {
             const nuevosOrdenes = {};
@@ -83,10 +98,9 @@ const Create = ({ auth }) => {
             ...prevData,
             componentesOrden: {
                 ...prevData.componentesOrden,
-                [componenteId]: parseInt(valor), // Asegúrate de convertir el valor a número
+                [componenteId]: parseInt(valor, 10), // Convertir el valor a número
             },
         }));
-        cambiarOrden();
     };
 
     //Guardar Cambios en las relacion menu-componentes
@@ -113,6 +127,8 @@ const Create = ({ auth }) => {
         setComponenteSeleccionado(null);
         setNombreComponente('');
         setMenuInformacion('');
+        setInicioOrden(0);
+        setIntervalo(1);
     };
 
 
@@ -342,7 +358,7 @@ const Create = ({ auth }) => {
                                                 <input
                                                     type="number"
                                                     className="form-control form-control-sm mx-3"
-                                                    value={inicioOrden} 
+                                                    value={Math.max(inicioOrden, 1)}
                                                     onChange={(e) => setInicioOrden(parseInt(e.target.value) || 0)} // Actualiza el estado directamente
                                                     style={{
                                                         width: '60px',
@@ -353,23 +369,36 @@ const Create = ({ auth }) => {
                                                 <input
                                                     type="number"
                                                     className="form-control form-control-sm mx-3"
-                                                    value={intervalo} 
+                                                    value={Math.max(intervalo, 1)}
                                                     onChange={(e) => setIntervalo(parseInt(e.target.value) || 0)} // Actualiza el estado directamente
                                                     style={{
                                                         width: '60px',
                                                         height: '30px',
                                                     }}
                                                 />
+
+                                                <button
+                                                    type='button'
+                                                    className="btn btn-primary col-2 mx-3"
+                                                    style={{
+                                                        width: '70px',
+                                                        height: '40px',
+                                                    }}
+                                                    onClick={() => cambiarOrden(inicioOrden, intervalo)}
+                                                >
+                                                    Fijar
+                                                </button>
                                             </div>
                                             <button
+                                                type='button'
                                                 className="btn btn-primary col-2 mx-3"
                                                 style={{
                                                     width: '90px',
                                                     height: '40px',
                                                 }}
-                                                onClick={() => cambiarOrden(inicioOrden, intervalo)}
+                                                onClick={ordenarByOrden}
                                             >
-                                                Aplicar
+                                                Ordenar
                                             </button>
                                         </div>
                                     </div>
@@ -381,19 +410,19 @@ const Create = ({ auth }) => {
                                                         <table className="table table-striped table-hover align-middle">
                                                             <thead className="sticky-top">
                                                                 <tr>
-                                                                    <th scope="col">ID</th>
                                                                     <th scope="col">Nombre</th>
-                                                                    <th scope="col">Descripción</th>
+                                                                    <th scope="col">ID</th>
+                                                                    <th scope="col">Item/Proceso/Botón</th>
                                                                     <th scope="col">URL</th>
                                                                     <th scope="col">Orden</th>
                                                                     <th scope="col">Activo</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                {data.componentes.map((componente) => (
-                                                                    <tr key={componente.id}>
-                                                                        <th scope="row">{componente.id}</th>
-                                                                        <td>{componente.nombre}</td>    
+                                                                {data.componentes.map((componente, index) => (
+                                                                    <tr key={`${componente.id}-${index}`}>
+                                                                        <td>{componente.nombre}</td>
+                                                                        <td>{componente.id}</td>
                                                                         <td>{componente.componente_item_proceso}</td>
                                                                         <td>{componente.url}</td>
                                                                         <td>
@@ -422,24 +451,28 @@ const Create = ({ auth }) => {
                                                 </div>
                                                 <div className="row d-flex justify-content-end mt-3">
                                                     <div className='col-6'>
-                                                        <button type="button" className="btn btn-secondary" onClick={handleReset}>
-                                                            Limpiar
-                                                        </button>
+
                                                     </div>
-                                                    <div className='col-3'>
-                                                        <button
-                                                            type="submit"
-                                                            className="btn btn-primary"
-                                                            disabled={!data.id_menu}
-                                                        >
-                                                            Aplicar
-                                                        </button>
-                                                    </div>
-                                                    <div className='col-3'>
-                                                        <button type='submit'
-                                                            className='btn btn-primary'
-                                                            disabled={!data.id_menu}
-                                                            onClick={handleGuardarCambios}>Guardar Cambios</button>
+                                                    <div className='col-5 d-flex justify-content-between'>
+                                                        <div>
+                                                            <button type="button" className="btn btn-secondary" onClick={handleReset}>
+                                                                Cancelar
+                                                            </button>
+                                                        </div>
+                                                        <div>
+                                                            <button
+                                                                type="submit"
+                                                                className="btn btn-primary mx-5"
+                                                                disabled={!data.id_menu}
+                                                            >
+                                                                Aplicar
+                                                            </button>
+
+                                                            <button type='submit'
+                                                                className='btn btn-primary'
+                                                                disabled={!data.id_menu}
+                                                                onClick={handleGuardarCambios}>Guardar</button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </>
@@ -633,5 +666,6 @@ const Create = ({ auth }) => {
 
     );
 };
+
 
 export default Create;
