@@ -45,5 +45,6 @@ class DatabaseSeeder extends Seeder
         $this->call(MenuSeed::class);
         $this->call(MenuComponenteSeed::class);
         $this->call(PerfilMenuSeed::class);
+        $this->call(CategoriaSeeder::class);
     }
 }

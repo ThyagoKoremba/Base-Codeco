@@ -3,7 +3,6 @@ import Modal from 'react-modal';
 import { Link } from '@inertiajs/react';
 
 import './styles.css';
-import Swal from 'sweetalert2';
 import CategoriaContacto from './../Categoria/CategoriaContacto';
 import { Dropdown } from 'react-bootstrap';
 import AsignarCategoria from '../Categoria/AsignarCategoria';
@@ -12,12 +11,19 @@ Modal.setAppElement('#app');
 const Index = ({ contactos }) => {
 
 
-    const [searchTerm, setSearchTerm] = useState('');
-    const [contacts, setContacts] = useState(contactos);
+    const [searchQuery, setSearchQuery] = useState("");
     const [modal, setModal] = useState(false);
     const [modalCategoria, setModalCategoria] = useState(false);
     const [selectedContact, setSelectedContact] = useState(null);
     const [modalAddCategoria, setModalAddCategoria] = useState(false);
+    const [filteredItems, setFilteredItems] = useState(contactos);
+
+    const handleSearch = () => {
+        const resultados = contactos.filter((contactos) =>
+            contactos.nombrefantasia.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredItems(resultados);
+    };
 
     const openModal = (contact) => {
         setSelectedContact(contact);
@@ -46,11 +52,6 @@ const Index = ({ contactos }) => {
         setSelectedContact(null);
     }
 
-   
-    const filteredContacts = contacts?.filter(contact =>
-        contact.nombrefantasia.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
 
     
 
@@ -60,13 +61,20 @@ const Index = ({ contactos }) => {
             <div className="container mt-4">
                 <div className="row mb-3">
                     <div className="col-md-6">
-                        <input
+                    <input
                             type="text"
-                            placeholder="Buscar contacto"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
                             className="form-control"
+                            placeholder="Buscar por Nombre"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)} 
                         />
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={handleSearch} 
+                        >
+                            Buscar
+                        </button>
                     </div>
 
                     <div className="col-md-6 text-right">
@@ -88,8 +96,8 @@ const Index = ({ contactos }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredContacts?.map(contact => (
-                                <tr key={contact.id_contacto}>
+                            {filteredItems?.map(contact => (
+                                <tr key={contact.id}>
                                     <td>{contact.apellidorazonsocial}</td>
                                     <td>{contact.nombrefantasia}</td>
                                     <td>{contact.fisicojuridico}</td>
@@ -102,7 +110,7 @@ const Index = ({ contactos }) => {
                                                 <Dropdown.Item >
                                                     <button className="btn w-100 text-start " onClick={() => openModal(contact)}>Más Info</button>
                                                 </Dropdown.Item>
-                                                <Dropdown.Item as={Link} href={`/contacto/${contact.id_contacto}/edit`}>
+                                                <Dropdown.Item as={Link} href={`/contacto/${contact.id}/edit`}>
                                                     <button className="btn w-100 text-start ">Editar</button>
                                                 </Dropdown.Item>
                                                 <Dropdown.Item>
@@ -111,7 +119,7 @@ const Index = ({ contactos }) => {
                                                 <Dropdown.Item>
                                                     <button className="btn w-100 text-start " onClick={() => openModalAddCategoria(contact)}>Asignar Categoria</button>
                                                 </Dropdown.Item>
-                                                <Dropdown.Item as={Link} href={`/contacto/${contact.id_contacto}/radicaciones`}>
+                                                <Dropdown.Item as={Link} href={`/contacto/${contact.id}/radicaciones`}>
                                                     <button className="btn w-100 text-start ">Radicaciones</button>
                                                 </Dropdown.Item>
                                             </Dropdown.Menu>
@@ -141,7 +149,7 @@ const Index = ({ contactos }) => {
                     ></button>
                 </div>
                 <div className="container">
-                    <CategoriaContacto userId={selectedContact?.id_contacto} />
+                    <CategoriaContacto userId={selectedContact?.id} />
                 </div>
             </Modal>
 
@@ -162,7 +170,7 @@ const Index = ({ contactos }) => {
                     ></button>
                 </div>
                 <div className="container">
-                    <AsignarCategoria userId={selectedContact?.id_contacto} />
+                    <AsignarCategoria userId={selectedContact?.id} />
                 </div>
             </Modal>
 
