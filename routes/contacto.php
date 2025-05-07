@@ -19,5 +19,5 @@ Route::prefix('contacto')->middleware('auth')->group(function () {
 
     Route::get('/{id_contacto}/radicaciones', [ContactoradicacionesController::class, 'index'])->name('contacto.radicaciones');
 
-
+    Route::get('/search/{term}', [ContactosController::class, 'search']);
 });
