@@ -9,22 +9,21 @@ import './styles.css';
 Modal.setAppElement('#app');
 
 import Swal from 'sweetalert2';
-import DashboardLayout from '@/Layouts/Sidebar';
 
 const CreateContact = ({ auth, fisicojuridico, identidades, condicionestributarias }) => {
 
     const initialValues = {
-        id_fisicojuridico: '',
+        id_fisicojuridico: '0',
         id_pais: '',
         car: '',
         apellidorazonsocial: '',
         nombrefantasia: '',
         nombresegundo: '',
-        id_personal: 1,
+        id_personal: '',
         id_personal_dato: '0',
-        id_condiciontributaria: '',
-        id_identidadtributaria: '',
-        id_identidadtributaria_dato: 'a',
+        id_condiciontributaria: '0',
+        id_identidadtributaria: '0',
+        id_identidadtributaria_dato: '0',
         mail_direccion: '',
         telefono_numero: '',
         telefono_sn_movil: false,
@@ -113,6 +112,7 @@ const CreateContact = ({ auth, fisicojuridico, identidades, condicionestributari
     const openRegionModal = () => {
         setIsRegionModalOpen(true);
     };
+
     const closeModal = () => {
         setIsRegionModalOpen(false);
         setRegionSearchResults([]);
@@ -177,7 +177,7 @@ const CreateContact = ({ auth, fisicojuridico, identidades, condicionestributari
 
         <>
 
-       
+
             <h3 className="text-center ">Crear Contacto</h3>
 
             <div className="container">
@@ -332,7 +332,7 @@ const CreateContact = ({ auth, fisicojuridico, identidades, condicionestributari
                                                             {identidad.descripcion}
                                                         </option>
                                                     ))
-                                                    : identidades.filter(identidad => identidad.sn_juridica == 0).map((identidad) => (
+                                                    : identidades.filter(identidad => identidad.sn_identidadtributaria == 0).map((identidad) => (
                                                         <option key={identidad.id} value={identidad.id}>
                                                             {identidad.descripcion}
                                                         </option>
@@ -345,6 +345,7 @@ const CreateContact = ({ auth, fisicojuridico, identidades, condicionestributari
                                         <div className="col-md-6">
                                             <label htmlFor="valorIdTributaria" className="form-label">Valor</label>
                                             <input
+                                                
                                                 id="valorIdTributaria"
                                                 type="text"
                                                 placeholder={mascaraTributaria}
@@ -353,7 +354,7 @@ const CreateContact = ({ auth, fisicojuridico, identidades, condicionestributari
                                                 value={data.id_identidadtributaria_dato}
                                                 className="form-control"
                                                 onChange={(e) => setData('id_identidadtributaria_dato', e.target.value)}
-                                                disabled={data.id_identidadtributaria === "1"}
+                                                disabled={data.id_identidadtributaria === "1" || data.id_identidadtributaria === ""}
                                             />
                                             {errors.id_identidadtributaria_dato && <div className="text-danger mt-1">{errors.id_identidadtributaria_dato}</div>}
                                         </div>
@@ -399,8 +400,9 @@ const CreateContact = ({ auth, fisicojuridico, identidades, condicionestributari
                                                 name="valorIdPersona"
                                                 value={data.id_personal_dato}
                                                 className="form-control"
+                                                maxLength="13"
                                                 onChange={(e) => setData('id_personal_dato', e.target.value)}
-                                                disabled={data.id_fisicojuridico == '2'}
+                                                disabled={data.id_fisicojuridico == '2' || data.id_personal === ""}
                                             />
                                             {errors.id_personal_dato && <div className="text-danger mt-1">{errors.id_personal_dato}</div>}
                                         </div>
@@ -413,7 +415,8 @@ const CreateContact = ({ auth, fisicojuridico, identidades, condicionestributari
                                             <label htmlFor="codigoAccesoRapido" className="form-label">Código de Acceso Rápido</label>
                                             <input
                                                 id="codigoAccesoRapido"
-                                                type="text"
+                                                type="number"
+                                                maxLength="5"
                                                 name="codigoAccesoRapido"
                                                 value={data.car}
                                                 className="form-control"
@@ -563,6 +566,7 @@ const CreateContact = ({ auth, fisicojuridico, identidades, condicionestributari
                 </div>
             </div >
 
+
             {/* Modal de búsqueda de países y regiones */}
             <Modal
                 isOpen={isPaisModalOpen || isRegionModalOpen || isProvinciaModalOpen}
@@ -574,7 +578,7 @@ const CreateContact = ({ auth, fisicojuridico, identidades, condicionestributari
                             ? "Buscar Región"
                             : "Buscar Provincia"
                 }
-
+                className="modal"
                 style={{
                     content: {
                         backgroundColor: '#ffffff',
@@ -583,17 +587,13 @@ const CreateContact = ({ auth, fisicojuridico, identidades, condicionestributari
                         padding: '20px',
                         maxWidth: '600px',
                         margin: '0 auto',
-                        width: '50%',
-                        overflow: 'auto',
-                        inset: 'unset',
                     }
                 }}
                 overlayClassName="modal-overlay"
             >
-                <div className="modal-dialog modal-lg h-100">
-                    <div className="modal-content h-100">
-                        <div className="modal-header d-flex justify-content-between">
-                            <h5 className="modal-title mb-3">
+               
+                        <div className="modal-header">
+                            <h5 className="modal-title">
                                 {isPaisModalOpen
                                     ? "Buscar País"
                                     : isRegionModalOpen
@@ -607,182 +607,174 @@ const CreateContact = ({ auth, fisicojuridico, identidades, condicionestributari
                                 aria-label="Cerrar"
                             ></button>
                         </div>
-                        <div className="modal-body h-100 d-flex flex-column">
-                            <div className='mb-auto'>
-                                <div className="card">
-                                    <div className="card-body">
-                                        <div className='input-group'>
-                                            <input
-                                                type="text"
-                                                value={
-                                                    isPaisModalOpen
-                                                        ? paisSearchQuery
-                                                        : isRegionModalOpen
-                                                            ? regionSearchQuery
-                                                            : provinciaSearchQuery
-                                                }
-                                                onChange={(e) => {
-                                                    if (isPaisModalOpen) {
-                                                        setPaisSearchQuery(e.target.value);
-                                                    } else if (isRegionModalOpen) {
-                                                        setRegionSearchQuery(e.target.value);
-                                                    } else {
-                                                        setProvinciaSearchQuery(e.target.value);
-                                                    }
-                                                }}
-                                                placeholder={
-                                                    isPaisModalOpen
-                                                        ? "Buscar por nombre de país"
-                                                        : isRegionModalOpen
-                                                            ? "Buscar por nombre de región"
-                                                            : "Buscar por nombre de provincia"
-                                                }
-                                                className="form-control"
-                                            />
-                                            <button
-                                                type="button"
-                                                className="btn btn-primary"
-                                                onClick={() => {
-                                                    if (isPaisModalOpen) {
-                                                        fetchPaisSearchResults();
-                                                    } else if (isRegionModalOpen) {
-                                                        fetchRegionSearchResults();
-                                                    } else {
-                                                        fetchProvinciaSearchResults();
-                                                    }
-                                                }}
-                                            >
-                                                Buscar
-                                            </button>
-                                        </div>
-                                        <table className="table table-hover" style={{ cursor: 'pointer' }}>
-                                            <thead>
-                                                <tr>
-                                                    <th>Nombre</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {(isPaisModalOpen
-                                                    ? paisSearchResults
-                                                    : isRegionModalOpen
-                                                        ? regionSearchResults
-                                                        : provinciaSearchResults
-                                                ).length > 0 ? (
-                                                    (isPaisModalOpen
-                                                        ? paisSearchResults
-                                                        : isRegionModalOpen
-                                                            ? regionSearchResults
-                                                            : provinciaSearchResults
-                                                    ).map((item) => (
-                                                        <tr key={item.id}>
-                                                            <td
-                                                                className='table-hover'
-                                                                onClick={() => {
-                                                                    if (isPaisModalOpen) {
-                                                                        handleSelectPais(item);
-                                                                    } else if (isRegionModalOpen) {
-                                                                        handleSelectRegion(item);
-                                                                    } else {
-                                                                        handleSelectProvincia(item);
-                                                                    }
-                                                                }}
-                                                            >
-                                                                {isPaisModalOpen
-                                                                    ? item.nombre
-                                                                    : isRegionModalOpen
-                                                                        ? item.descripcion
-                                                                        : item.descripcion}
-                                                            </td>
-                                                        </tr>
-                                                    ))
-                                                ) : (
-                                                    <tr>
-                                                        <td colSpan="2" className="text-center">No se encontraron resultados</td>
-                                                    </tr>
-                                                )}
-                                            </tbody>
-                                        </table>
-
-                                        {(isPaisModalOpen
+                        <div className="modal-body">
+                            <div className="input-group mb-3">
+                                <input
+                                    type="text"
+                                    value={
+                                        isPaisModalOpen
+                                            ? paisSearchQuery
+                                            : isRegionModalOpen
+                                                ? regionSearchQuery
+                                                : provinciaSearchQuery
+                                    }
+                                    onChange={(e) => {
+                                        if (isPaisModalOpen) {
+                                            setPaisSearchQuery(e.target.value);
+                                        } else if (isRegionModalOpen) {
+                                            setRegionSearchQuery(e.target.value);
+                                        } else {
+                                            setProvinciaSearchQuery(e.target.value);
+                                        }
+                                    }}
+                                    placeholder={
+                                        isPaisModalOpen
+                                            ? "Buscar por nombre de país"
+                                            : isRegionModalOpen
+                                                ? "Buscar por nombre de región"
+                                                : "Buscar por nombre de provincia"
+                                    }
+                                    className="form-control"
+                                />
+                                <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                    onClick={() => {
+                                        if (isPaisModalOpen) {
+                                            fetchPaisSearchResults();
+                                        } else if (isRegionModalOpen) {
+                                            fetchRegionSearchResults();
+                                        } else {
+                                            fetchProvinciaSearchResults();
+                                        }
+                                    }}
+                                >
+                                    Buscar
+                                </button>
+                            </div>
+                            <table className="table table-hover" style={{ cursor: 'pointer' }}>
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {(isPaisModalOpen
+                                        ? paisSearchResults
+                                        : isRegionModalOpen
+                                            ? regionSearchResults
+                                            : provinciaSearchResults
+                                    ).length > 0 ? (
+                                        (isPaisModalOpen
                                             ? paisSearchResults
                                             : isRegionModalOpen
                                                 ? regionSearchResults
                                                 : provinciaSearchResults
-                                        ).length > 0 ? (
-                                            <div className="d-flex justify-content-center gap-2">
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-secondary"
+                                        ).map((item) => (
+                                            <tr key={item.id}>
+                                                <td
+                                                    className='table-hover'
                                                     onClick={() => {
                                                         if (isPaisModalOpen) {
-                                                            fetchPaisSearchResults(paisCurrentPage - 1);
+                                                            handleSelectPais(item);
                                                         } else if (isRegionModalOpen) {
-                                                            fetchRegionSearchResults(regionCurrentPage - 1);
+                                                            handleSelectRegion(item);
                                                         } else {
-                                                            fetchProvinciaSearchResults(provinciaCurrentPage - 1);
+                                                            handleSelectProvincia(item);
                                                         }
                                                     }}
-                                                    disabled={
-                                                        isPaisModalOpen
-                                                            ? paisCurrentPage === 1
-                                                            : isRegionModalOpen
-                                                                ? regionCurrentPage === 1
-                                                                : provinciaCurrentPage === 1
-                                                    }
                                                 >
-                                                    <span aria-hidden="true">&laquo;</span>
-                                                </button>
-                                                <span>
                                                     {isPaisModalOpen
-                                                        ? paisCurrentPage
+                                                        ? item.nombre
                                                         : isRegionModalOpen
-                                                            ? regionCurrentPage
-                                                            : provinciaCurrentPage} de{" "}
-                                                    {isPaisModalOpen
-                                                        ? paisLastPage
-                                                        : isRegionModalOpen
-                                                            ? regionLastPage
-                                                            : provinciaLastPage}
-                                                </span>
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-secondary"
-                                                    onClick={() => {
-                                                        if (isPaisModalOpen) {
-                                                            fetchPaisSearchResults(paisCurrentPage + 1);
-                                                        } else if (isRegionModalOpen) {
-                                                            fetchRegionSearchResults(regionCurrentPage + 1);
-                                                        } else {
-                                                            fetchProvinciaSearchResults(provinciaCurrentPage + 1);
-                                                        }
-                                                    }}
-                                                    disabled={
-                                                        isPaisModalOpen
-                                                            ? paisCurrentPage === paisLastPage
-                                                            : isRegionModalOpen
-                                                                ? regionCurrentPage === regionLastPage
-                                                                : provinciaCurrentPage === provinciaLastPage
-                                                    }
-                                                >
-                                                    <span aria-hidden="true">&raquo;</span>
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            ''
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                                            ? item.descripcion
+                                                            : item.descripcion}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="2" className="text-center">No se encontraron resultados</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
 
+                            {(isPaisModalOpen
+                                ? paisSearchResults
+                                : isRegionModalOpen
+                                    ? regionSearchResults
+                                    : provinciaSearchResults
+                            ).length > 0 ? (
+                                <div className="d-flex justify-content-center gap-2">
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary"
+                                        onClick={() => {
+                                            if (isPaisModalOpen) {
+                                                fetchPaisSearchResults(paisCurrentPage - 1);
+                                            } else if (isRegionModalOpen) {
+                                                fetchRegionSearchResults(regionCurrentPage - 1);
+                                            } else {
+                                                fetchProvinciaSearchResults(provinciaCurrentPage - 1);
+                                            }
+                                        }}
+                                        disabled={
+                                            isPaisModalOpen
+                                                ? paisCurrentPage === 1
+                                                : isRegionModalOpen
+                                                    ? regionCurrentPage === 1
+                                                    : provinciaCurrentPage === 1
+                                        }
+                                    >
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </button>
+                                    <span>
+                                        {isPaisModalOpen
+                                            ? paisCurrentPage
+                                            : isRegionModalOpen
+                                                ? regionCurrentPage
+                                                : provinciaCurrentPage} de{" "}
+                                        {isPaisModalOpen
+                                            ? paisLastPage
+                                            : isRegionModalOpen
+                                                ? regionLastPage
+                                                : provinciaLastPage}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary"
+                                        onClick={() => {
+                                            if (isPaisModalOpen) {
+                                                fetchPaisSearchResults(paisCurrentPage + 1);
+                                            } else if (isRegionModalOpen) {
+                                                fetchRegionSearchResults(regionCurrentPage + 1);
+                                            } else {
+                                                fetchProvinciaSearchResults(provinciaCurrentPage + 1);
+                                            }
+                                        }}
+                                        disabled={
+                                            isPaisModalOpen
+                                                ? paisCurrentPage === paisLastPage
+                                                : isRegionModalOpen
+                                                    ? regionCurrentPage === regionLastPage
+                                                    : provinciaCurrentPage === provinciaLastPage
+                                        }
+                                    >
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </button>
+                                </div>
+                            ) : (
+                                ''
+                            )}
+                      
+                </div>
             </Modal>
-      
-</>
+
+
+
+        </>
     );
 };
-
-
 
 export default CreateContact;
