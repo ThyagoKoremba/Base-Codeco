@@ -85,70 +85,7 @@ const AsignarCategoria = ({ onClose, userId }) => {
         setData('id_categoria', categoryId);
     };
 
-    const handleAssign = (e) => {
-        e.preventDefault();
-
-        if (!data.id_entidad) {
-            Swal.fire({
-                icon: 'warning',
-                title: '¡Atención!',
-                text: 'Por favor, seleccione un contacto.',
-            });
-            return;
-        }
-
-        if (!data.id_categoria) {
-            Swal.fire({
-                icon: 'warning',
-                title: '¡Atención!',
-                text: 'Por favor, seleccione una categoría.',
-            });
-            return;
-        }
-
-        post(route('categoria.asignar'))
-            .then((response) => {
-                if (response.ok) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: '¡Asignado!',
-                        text: 'La categoría se ha asignado correctamente.',
-                        timer: 1500,
-                        showConfirmButton: false,
-                    });
-                    reset(); // Limpiar el formulario después de la asignación
-                    setSelectedContact(null);
-                    setSelectedCategoriaId('');
-                    setIsSearchVisible(true);
-                    
-                } else {
-                    return response.json().then(data => {
-                        if (data && data.errors) {
-                            let errorMessages = Object.values(data.errors).flat().join('<br>');
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error al asignar',
-                                html: errorMessages,
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error al asignar',
-                                text: 'Hubo un problema al asignar la categoría.',
-                            });
-                        }
-                    });
-                }
-            })
-            .catch((error) => {
-                console.error('Error assigning category:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error al asignar',
-                    text: 'Hubo un error inesperado al intentar asignar la categoría.',
-                });
-            });
-    };
+   
 
     const handleClear = () => {
         Swal.fire({
@@ -178,6 +115,21 @@ const AsignarCategoria = ({ onClose, userId }) => {
                 });
             }
         });
+    };
+    const handleAssign = (e) => {
+        e.preventDefault();
+        post(route('categoria.asignar'),{
+        onSuccess: () => {
+            handleClear();
+            Swal.fire({
+                title: 'Categoria Asignada',
+                text: 'La categoria se ha asignado exitosamente.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+
+        }
+    })
     };
 
     return (

@@ -84,6 +84,6 @@ class CategoriasController extends Controller
     
         $contactoCategoria->save();
     
-        return response()->json(['ok' => true, 'message' => 'La categoría se ha asignado correctamente.']);
+        return to_route('contacto.index');
     }
 }
