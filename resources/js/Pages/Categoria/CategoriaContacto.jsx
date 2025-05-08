@@ -29,7 +29,7 @@ const CategoriaContacto = ({ userId }) => {
           // Handle error display to user if needed
         });
     }
-  }, [userId]);
+  }, [userId, closeModal]);
 
   
   function openModal() {
@@ -47,7 +47,7 @@ const CategoriaContacto = ({ userId }) => {
           <h3>Categorías </h3>
         </div>
         <div className="col-md-3 d-flex justify-content-end align-items-center">
-          <button className="btn btn-primary" onClick={openModal}>
+          <button className="btn btn-primary w-100" onClick={openModal}>
             Asignar Contacto
           </button>
         </div>
