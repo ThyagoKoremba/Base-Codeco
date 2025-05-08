@@ -22,7 +22,6 @@ const CategoriaContacto = ({ userId }) => {
           return response.json();
         })
         .then((data) => {
-          console.log('Fetched categories:', data);
           setCategorias(data.data);
         })
         .catch((error) => {

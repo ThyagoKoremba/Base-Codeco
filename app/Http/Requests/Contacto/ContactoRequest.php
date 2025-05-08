@@ -34,7 +34,7 @@ class ContactoRequest extends FormRequest
             "id_identidadtributaria_dato"=> "regex:/^[\p{N}\p{L}]{1,50}$/u",
             "telefono_numero"=>"regex:/^[\p{N}\p{L}]{1,50}$/u",
             "mail_direccion"=> "required|email",
-            "direccion_calle"=>"regex:/^[\p{N}\p{L}]{1,255}$/u",
+            "direccion_calle"=>"regex:/^[\p{N}\p{L}\s]{1,255}$/u",
             "codigo_postal"=>"regex:/^[\p{N}\p{L}]{1,20}$/u",
         ];
     }
