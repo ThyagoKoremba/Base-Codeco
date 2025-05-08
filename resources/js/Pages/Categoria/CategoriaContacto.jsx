@@ -22,7 +22,8 @@ const CategoriaContacto = ({ userId }) => {
           return response.json();
         })
         .then((data) => {
-          setCategorias(data);
+          console.log('Fetched categories:', data);
+          setCategorias(data.data);
         })
         .catch((error) => {
           console.error('Error fetching categories:', error);
@@ -69,10 +70,10 @@ const CategoriaContacto = ({ userId }) => {
             {/* Ensure unique key */}
             {categorias.map((categoria) => (
   <tr key={categoria.id}>
-    <td>{categoria.categoria?.descripcion}</td>
-    <td>{categoria.id}</td>
+    <td>{categoria.descripcion}</td>
+    <td>{categoria.id_categoria}</td>
     <td>{categoria.id_dato}</td>
-    <td>{categoria.contacto?.apellidorazonsocial || categoria.contacto?.car || `ID: ${categoria.id_contacto}`}</td>
+    <td>{categoria.apellidoynombre}</td>
   </tr>
 ))}
           </tbody>

@@ -54,11 +54,14 @@ class CategoriasController extends Controller
 
     public function getCategoriasByUserId($userId)
     {
-        $categorias = ContactoCategorias::where('id_contacto', $userId)
-            ->with('categoria')
+        $categorias = ContactoCategorias::select('contacto_categorias.*')
+            ->where('contacto_categorias.id_contacto', $userId)
+            ->join('categorias', 'contacto_categorias.id_categoria', '=', 'categorias.id')
+            ->join('contactos', 'contacto_categorias.id_contacto', '=', 'contactos.id')
+            ->select('contacto_categorias.id_categoria','contacto_categorias.id_dato','categorias.descripcion','contactos.apellidoynombre')
             ->get();
     
-        return response()->json($categorias);
+        return response()->json(['data' => $categorias]);
     }
 
     public function getCategorias(): JsonResponse

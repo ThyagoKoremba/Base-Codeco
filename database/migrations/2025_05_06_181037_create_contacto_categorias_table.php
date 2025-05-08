@@ -20,9 +20,9 @@ return new class extends Migration
             $table->index('id_categoria','IDX_id_categoria_contactocategoria');
             $table->unsignedBigInteger('id_entidad')->default(1);
             $table->foreign('id_entidad','FK_id_entidad_contactocategoria')->references('id')->on('contactos');
-            $table->index('id_entidad','IDX_id_entidad_contactocategoria');
-            $table->primary(['id_contacto','id_categoria','id_entidad']);
-            $table->string('id_dato',10);
+            $table->index('id_entidad','IDX_id_entidad_contactocategoria'); 
+            $table->string('id_dato',30)->default(0);
+            $table->primary(['id_contacto','id_categoria','id_entidad','id_dato']);
             $table->date('fecha_alta');
             $table->boolean('sn_activo')->default(true);
             $table->unsignedBigInteger('id_user_created_at')->default(1);

@@ -10,7 +10,7 @@ class ContactoCategorias extends Model
     use HasFactory;
 
     protected $table = 'contacto_categorias';
-    protected $primaryKey = ['id_contacto', 'id_categoria', 'id_entidad'];
+    protected $primaryKey = ['id_contacto', 'id_categoria', 'id_entidad','id_dato'];
     public $incrementing = false;
     protected $fillable = [
         'id_contacto',
