@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 
 
-const AsignarCategoria = ({ onClose, userId }) => {
-    const [categories, setCategories] = useState([]);
+const AsignarCategoria = ({ onClose, userId, categorias }) => {
+    
     const [selectedCategory, setSelectedCategory] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [contacts, setContacts] = useState([]);
@@ -15,7 +15,7 @@ const AsignarCategoria = ({ onClose, userId }) => {
 
    console.log(selectedCategory)
    
-    useEffect(() => {
+   /*  useEffect(() => {
         // Fetch categories
         fetch('/categoria/list')
             .then((response) => response.json())
@@ -25,7 +25,7 @@ const AsignarCategoria = ({ onClose, userId }) => {
             .catch((error) => {
                 console.error('Error fetching categories:', error);
             });
-    }, []);
+    }, []); */
 
      const handleSearchChange = (event) => {
         const term = event.target.value;
@@ -161,7 +161,7 @@ const AsignarCategoria = ({ onClose, userId }) => {
                         style={{ maxWidth: '500px' }}
                     >
                         <option value="">Seleccione una categoría</option>
-                        {categories.map((category) => (
+                        {categorias.map((category) => (
                             <option key={category.id} value={category.id}>
                                 {category.descripcion}
                             </option>
