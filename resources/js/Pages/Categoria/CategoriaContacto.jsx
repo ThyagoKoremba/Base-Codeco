@@ -1,18 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import AsignarContacto from './AsignarContacto'; // Assuming AsignarContacto.js is in the same directory
-
-const customStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    zIndex:2000
-  },
-};
+import AsignarCategoria from './AsignarCategoria';
+import './../Contacto/styles.css'
 
 
 Modal.setAppElement('#app'); 
@@ -21,7 +10,7 @@ const CategoriaContacto = ({ userId }) => {
   const [categorias, setCategorias] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
 
-  console.log(categorias);
+
 
   useEffect(() => {
     if (userId) {
@@ -42,6 +31,7 @@ const CategoriaContacto = ({ userId }) => {
     }
   }, [userId]);
 
+  
   function openModal() {
     setIsOpen(true);
   }
@@ -71,20 +61,20 @@ const CategoriaContacto = ({ userId }) => {
             <tr>
               <th>Descripción</th>
               <th>ID</th>
-              {/*<th>ID/MAT/N°</th>
-              <th>OTORGADO POR</th>*/}
+              <th>ID/MAT/N°</th>
+              <th>OTORGADO POR</th>
             </tr>
           </thead>
           <tbody>
             {/* Ensure unique key */}
             {categorias.map((categoria) => (
-              <tr key={categoria.id}>
-                <td>{categoria.categoria_descripcion}</td>
-                <td>{categoria.id}</td>
-                {/*<td>{categoria.otro_id}</td>
-                <td>{categoria.otorgado_por}</td>*/}
-              </tr>
-            ))}
+  <tr key={categoria.id}>
+    <td>{categoria.categoria?.descripcion}</td>
+    <td>{categoria.id}</td>
+    <td>{categoria.id_dato}</td>
+    <td>{categoria.contacto?.apellidorazonsocial || categoria.contacto?.car || `ID: ${categoria.id_contacto}`}</td>
+  </tr>
+))}
           </tbody>
         </table>
       )}
@@ -92,14 +82,21 @@ const CategoriaContacto = ({ userId }) => {
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
-        style={customStyles}
+       className="modal"
+       overlayClassName="modal-overlay"
         contentLabel="Asignar Contacto Modal"
       >
-        <h2>Asignar Contacto a Categoría</h2>
-        <AsignarContacto userId={userId} closeModal={closeModal} categorias={categorias} />
-        <button className="btn btn-secondary mt-3" onClick={closeModal}>
-          Cerrar
-        </button>
+       <div className="modal-header">
+                   
+                    <button
+                        type="button"
+                        className="btn-close"
+                        onClick={closeModal}
+                        aria-label="Cerrar"
+                    ></button>
+                </div>
+        <AsignarCategoria userId={userId} closeModal={closeModal} categorias={categorias} />
+      
       </Modal>
     </div>
   );

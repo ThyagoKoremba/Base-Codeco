@@ -55,16 +55,9 @@ class CategoriasController extends Controller
     public function getCategoriasByUserId($userId)
     {
         $categorias = ContactoCategorias::where('id_contacto', $userId)
-            ->with('categoria:id,descripcion') // Assuming the relationship is defined in the ContactoCategorias model
-            ->get()
-            ->map(function ($contactoCategoria) {
-                return [
-                    'id' => $contactoCategoria->id,
-                    'id_contacto' => $contactoCategoria->id_contacto,
-                    'categoria_descripcion' => $contactoCategoria->categoria->descripcion ?? null,
-                ];
-            });
-
+            ->with('categoria')
+            ->get();
+    
         return response()->json($categorias);
     }
 
@@ -80,7 +73,7 @@ class CategoriasController extends Controller
 
     public function assignCategoryToUser(Request $request)
     {
-        \Log::info('Datos recibidos en assignCategoryToUser:', $request->all()); // Depuración
+       
 
         // Ver el contenido del request enviado desde el front
         $contactoCategoria = new ContactoCategorias();
@@ -93,6 +86,6 @@ class CategoriasController extends Controller
         $contactoCategoria->save();
 
 
-        return response()->json(['message' => 'Categoría asignada correctamente al contacto']);
+        
     }
 }

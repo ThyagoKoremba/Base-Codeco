@@ -22,4 +22,14 @@ class ContactoCategorias extends Model
         'id_user_created_at',
         'id_user_updated_at'
     ];
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categorias::class, 'id_categoria', 'id');
+    }
+
+    public function contacto()
+    {
+        return $this->belongsTo(Contactos::class, 'id_contacto', 'id');
+    }
 }

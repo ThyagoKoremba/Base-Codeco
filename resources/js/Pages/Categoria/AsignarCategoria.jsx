@@ -1,70 +1,54 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from '@inertiajs/react';
 import Swal from 'sweetalert2';
-import { set } from 'date-fns';
 
-
-const AsignarCategoria = ({ onClose, userId, categorias }) => {
-    
-    const [selectedCategory, setSelectedCategory] = useState('');
 const AsignarCategoria = ({ onClose, userId }) => {
-
     const initialValues = {
         id_contacto: userId,
         id_categoria: '',
         id_entidad: '',
         id_dato: '',
-        id_user: '',
         sn_activo: true,
-    }
+    };
 
-    const { data, setData, post } = useForm(initialValues);
-
+    const { data, setData, post, reset, processing, errors } = useForm(initialValues);
 
     const [categorias, setCategorias] = useState([]);
-    const [selectedCategoria, setSelectedCategoria] = useState(null);
+    const [selectedCategoriaId, setSelectedCategoriaId] = useState(''); // Guardamos solo el ID
     const [searchTerm, setSearchTerm] = useState('');
     const [contactos, setContactos] = useState([]);
-    const [selectedContactId, setSelectedContactId] = useState(null);
+    const [selectedContact, setSelectedContact] = useState(null); // Guardamos el objeto del contacto seleccionado
     const [searchError, setSearchError] = useState('');
     const [isSearchVisible, setIsSearchVisible] = useState(true);
 
-    const [id_dato, setIdDato] = useState(''); // New state for ID/MAT/N°
-
-   console.log(selectedCategory)
-   
-   /*  useEffect(() => {
+    useEffect(() => {
         // Fetch categories
-        fetch('/categoria/list')
+        fetch('/categoria/getCategorias')
             .then((response) => response.json())
             .then((data) => {
-                setCategories(data);
+                setCategorias(data);
             })
             .catch((error) => {
                 console.error('Error fetching categories:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al cargar las categorías',
+                    text: 'Hubo un problema al obtener la lista de categorías.',
+                });
             });
-    }, []); */
-
-    const fetchCategorias = async () => {
-
-        const response = await fetch('/categoria/getCategorias');
-        const result = await response.json();
-        setCategorias(result.data);
-    };
-
-    useEffect(() => {
-        fetchCategorias();
-    }, [])
+    }, []);
 
     const handleSearchChange = (event) => {
         const term = event.target.value;
         setSearchTerm(term);
         setContactos([]); // Clear previous results
-        setSelectedContactId(''); // Clear selected contact
+        setSelectedContact(null); // Clear selected contact
+        setData('id_entidad', ''); // Limpiar el ID de la entidad al cambiar la búsqueda
         setSearchError('');
+        setIsSearchVisible(true); // Aseguramos que la lista de búsqueda sea visible
 
         if (term.length >= 5) {
-            fetch(`/contacto/search/${term}`) // Replace with your actual API endpoint for searching contactos
+            fetch(`/contacto/search/${term}`)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.length > 0) {
@@ -76,6 +60,11 @@ const AsignarCategoria = ({ onClose, userId }) => {
                 .catch((error) => {
                     console.error('Error searching contactos:', error);
                     setSearchError('Error al buscar contactos.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error al buscar contactos',
+                        text: 'Hubo un problema al realizar la búsqueda.',
+                    });
                 });
         } else if (term.length > 0) {
             setSearchError('Ingrese al menos 5 caracteres para buscar.');
@@ -83,22 +72,23 @@ const AsignarCategoria = ({ onClose, userId }) => {
     };
 
     const handleContactSelect = (contact) => {
-        setSelectedContactId(contact);
-        data.id_entidad = contact.id;
-        setIsSearchVisible(false); // Oculta la búsqueda
+        setSelectedContact(contact);
+        setData('id_entidad', contact.id);
+        setIsSearchVisible(false); // Oculta la búsqueda después de seleccionar
         setContactos([]);
         setSearchTerm('');
         setSearchError('');
     };
 
-    const handleCategoriaSelect = (categoria) => {
-        setSelectedCategoria(categoria);
-        data.id_categoria = categoria;
-    }
+    const handleCategoriaSelect = (categoryId) => {
+        setSelectedCategoriaId(categoryId);
+        setData('id_categoria', categoryId);
+    };
 
     const handleAssign = (e) => {
         e.preventDefault();
-        if (!selectedContactId) {
+
+        if (!data.id_entidad) {
             Swal.fire({
                 icon: 'warning',
                 title: '¡Atención!',
@@ -107,7 +97,7 @@ const AsignarCategoria = ({ onClose, userId }) => {
             return;
         }
 
-        if (!selectedCategoria) {
+        if (!data.id_categoria) {
             Swal.fire({
                 icon: 'warning',
                 title: '¡Atención!',
@@ -115,14 +105,48 @@ const AsignarCategoria = ({ onClose, userId }) => {
             });
             return;
         }
-        const dataToSend = {
-            id_contacto: userId,
-            id_categoria: data,
-            id_entidad: data.id_entidad,
-            id_dato: data.id_dato,
-            sn_activo: true,
-        }
-        post(route('categoria.asignar'), dataToSend)
+
+        post(route('categoria.asignar'))
+            .then((response) => {
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Asignado!',
+                        text: 'La categoría se ha asignado correctamente.',
+                        timer: 1500,
+                        showConfirmButton: false,
+                    });
+                    reset(); // Limpiar el formulario después de la asignación
+                    setSelectedContact(null);
+                    setSelectedCategoriaId('');
+                    setIsSearchVisible(true);
+                } else {
+                    return response.json().then(data => {
+                        if (data && data.errors) {
+                            let errorMessages = Object.values(data.errors).flat().join('<br>');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error al asignar',
+                                html: errorMessages,
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error al asignar',
+                                text: 'Hubo un problema al asignar la categoría.',
+                            });
+                        }
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error('Error assigning category:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al asignar',
+                    text: 'Hubo un error inesperado al intentar asignar la categoría.',
+                });
+            });
     };
 
     const handleClear = () => {
@@ -137,13 +161,13 @@ const AsignarCategoria = ({ onClose, userId }) => {
             cancelButtonText: 'Cancelar',
         }).then((result) => {
             if (result.isConfirmed) {
-                setSelectedCategoria('');
+                reset();
+                setSelectedCategoriaId('');
                 setSearchTerm('');
                 setContactos([]);
-                setSelectedContactId(null);
+                setSelectedContact(null);
                 setSearchError('');
                 setIsSearchVisible(true);
-                setIdDato('');
                 Swal.fire({
                     icon: 'success',
                     title: '¡Listo!',
@@ -154,92 +178,95 @@ const AsignarCategoria = ({ onClose, userId }) => {
             }
         });
     };
+
     return (
-        <>
-            <div className="container  mt-4" style={{ maxWidth: '600px' }}>
-                <h4>Asignar Categoría </h4>
+        <div className="container mt-4" style={{ maxWidth: '600px' }}>
+            <h4>Asignar Categoría</h4>
 
-
-
-
-
-                <div className="m-3">
-                    <label htmlFor="categorySelect" className="form-label">Categoría:</label>
-                    <select
-                        className="form-control"
-                        id="categorySelect"
-                        value={selectedCategoria}
-                        onChange={(e) => handleCategoriaSelect(e.target.value)} // Actualiza el estado con el id de la categoría
-                        style={{ maxWidth: '500px' }}
-                    >
-                        <option value="">Seleccione una categoría</option>
-                        {categorias.map((category) => (
-                            <option key={category.id} value={category.id}>
-                                {category.descripcion}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div className="m-3">
-                    <label htmlFor="contactSearch" className="form-label">Otorgado por:</label>
-                    {isSearchVisible && (
-                        <div>
-
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="contactSearch"
-                                placeholder="Buscar contacto (mínimo 5 caracteres)"
-                                value={searchTerm}
-                                onChange={handleSearchChange}
-                                style={{ maxWidth: '500px' }}
-                            />
-                            {searchError && <div className="form-text text-danger">{searchError}</div>}
-                            {contactos.length > 0 && (
-                                <ul className="list-group mt-2">
-                                    {contactos.map((contact) => (
-                                        <li
-                                            key={contact.id}
-                                            className={`list-group-item list-group-item-action ${selectedContactId?.id === contact.id ? 'active' : ''}`}
-                                            onClick={() => handleContactSelect(contact)}
-                                            style={{ cursor: 'pointer' }}
-                                        >
-                                            {contact.apellidorazonsocial || contact.car || `ID: ${contact.id}`}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                    )}
-                    {selectedContactId && (
-                        <div className=" text-success  mt-2"> {selectedContactId.apellidorazonsocial || selectedContactId.car || `ID: ${selectedContactId.id}`} {selectedContactId.nombrefantasia}</div>
-                    )}
-                </div>
-
-                <div className="m-3">
-                    <label htmlFor="contactSearch" className="form-label">ID/MAT/N°:</label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="contactSearch"
-
-                        value={data.id_dato}
-                        onChange={(e) => setData('id_dato', e.target.value)}
-
-                        style={{ maxWidth: '500px' }}
-                    />
-                </div>
-
-                <button className="btn btn-success m-3" onClick={handleAssign} disabled={!selectedContactId || !selectedCategoria}>
-                    Asignar
-                </button>
-                <button className="btn btn-warning m-3" onClick={handleClear}>
-                    Limpiar
-                </button>
+            <div className="m-3">
+                <label htmlFor="categorySelect" className="form-label">Categoría:</label>
+                <select
+                    className="form-control"
+                    id="categorySelect"
+                    value={selectedCategoriaId}
+                    onChange={(e) => handleCategoriaSelect(e.target.value)}
+                    style={{ maxWidth: '500px' }}
+                >
+                    <option value="">Seleccione una categoría</option>
+                    {categorias.data?.map((category) => (
+                        <option key={category.id} value={category.id}>
+                            {category.descripcion}
+                        </option>
+                    ))}
+                </select>
+                {errors.id_categoria && <div className="form-text text-danger">{errors.id_categoria}</div>}
             </div>
-        </>
 
+            <div className="m-3">
+                <label htmlFor="contactSearch" className="form-label">Otorgado por:</label>
+                {isSearchVisible && (
+                    <div>
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="contactSearch"
+                            placeholder="Buscar contacto (mínimo 5 caracteres)"
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            style={{ maxWidth: '500px' }}
+                        />
+                        {searchError && <div className="form-text text-danger">{searchError}</div>}
+                        {contactos.length > 0 && (
+                            <ul className="list-group mt-2">
+                                {contactos.map((contact) => (
+                                    <li
+                                        key={contact.id}
+                                        className={`list-group-item list-group-item-action ${selectedContact?.id === contact.id ? 'active' : ''}`}
+                                        onClick={() => handleContactSelect(contact)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        {contact.apellidorazonsocial || contact.car || `ID: ${contact.id}`} {contact.nombrefantasia}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                )}
+                {selectedContact && (
+                    <div className="text-success mt-2">
+                        Seleccionado: {selectedContact.apellidorazonsocial || selectedContact.car || `ID: ${selectedContact.id}`} {selectedContact.nombrefantasia}
+                        <button className="btn btn-sm btn-outline-secondary ms-2" onClick={() => { setSelectedContact(null); setData('id_entidad', ''); setIsSearchVisible(true); }}>
+                            Cambiar
+                        </button>
+                    </div>
+                )}
+                {errors.id_entidad && <div className="form-text text-danger">{errors.id_entidad}</div>}
+            </div>
+
+            <div className="m-3">
+                <label htmlFor="datoInput" className="form-label">ID/MAT/N°:</label>
+                <input
+                    type="text" // Cambiado a 'text' para permitir otros formatos además de número
+                    className="form-control"
+                    id="datoInput"
+                    value={data.id_dato}
+                    onChange={(e) => setData('id_dato', e.target.value)}
+                    style={{ maxWidth: '500px' }}
+                />
+                {errors.id_dato && <div className="form-text text-danger">{errors.id_dato}</div>}
+            </div>
+
+            <button
+                className="btn btn-success m-3"
+                onClick={handleAssign}
+                disabled={processing || !data.id_entidad || !data.id_categoria}
+            >
+                {processing ? 'Asignando...' : 'Asignar'}
+            </button>
+            <button className="btn btn-warning m-3" onClick={handleClear} disabled={processing}>
+                Limpiar
+            </button>
+        </div>
     );
 };
 
