@@ -10,7 +10,7 @@ const CategoriaContacto = ({ userId }) => {
   const [categorias, setCategorias] = useState([]);
   const [modalIsOpen, setIsOpen] = useState(false);
 
-
+ 
 
   useEffect(() => {
     if (userId) {

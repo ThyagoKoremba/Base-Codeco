@@ -271,4 +271,4 @@ const AsignarCategoria = ({ onClose, userId }) => {
     );
 };
 
-export default AsignarCategoria;
+export default AsignarCategoria; 

@@ -12,7 +12,7 @@ const Edit = ({ auth, categoria }) => {
         sn_registrosistema: categoria.sn_registrosistema,
         sn_activo: categoria.sn_activo,
     }
-
+ 
     const { data, errors, setData, put } = useForm(initialValues)
 
     const submit = (e) => {

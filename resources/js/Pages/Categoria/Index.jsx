@@ -14,7 +14,7 @@ const Index = ({ auth, categorias }) => {
                 <button className='btn btn-primary'>Nueva Categorias</button>
             </a>
         </div>
-
+ 
 
             <div className="tabla-index">
                 <div className="table-responsive overflow-visible">

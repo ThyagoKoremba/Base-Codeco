@@ -29,7 +29,7 @@ const Create = ({ auth }) => {
                         <button className='btn btn-primary'>Categorias</button>
                     </a>
                 </div>
-
+ 
             <div className="py-5">
                 <div className="container">
                     <div className="card shadow-sm">
