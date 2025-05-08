@@ -1,12 +1,30 @@
 import React, { useState, useEffect } from 'react';
+import { useForm } from '@inertiajs/react';
 import Swal from 'sweetalert2';
+import { set } from 'date-fns';
 
 
 const AsignarCategoria = ({ onClose, userId, categorias }) => {
     
     const [selectedCategory, setSelectedCategory] = useState('');
+const AsignarCategoria = ({ onClose, userId }) => {
+
+    const initialValues = {
+        id_contacto: userId,
+        id_categoria: '',
+        id_entidad: '',
+        id_dato: '',
+        id_user: '',
+        sn_activo: true,
+    }
+
+    const { data, setData, post } = useForm(initialValues);
+
+
+    const [categorias, setCategorias] = useState([]);
+    const [selectedCategoria, setSelectedCategoria] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
-    const [contacts, setContacts] = useState([]);
+    const [contactos, setContactos] = useState([]);
     const [selectedContactId, setSelectedContactId] = useState(null);
     const [searchError, setSearchError] = useState('');
     const [isSearchVisible, setIsSearchVisible] = useState(true);
@@ -27,41 +45,59 @@ const AsignarCategoria = ({ onClose, userId, categorias }) => {
             });
     }, []); */
 
-     const handleSearchChange = (event) => {
+    const fetchCategorias = async () => {
+
+        const response = await fetch('/categoria/getCategorias');
+        const result = await response.json();
+        setCategorias(result.data);
+    };
+
+    useEffect(() => {
+        fetchCategorias();
+    }, [])
+
+    const handleSearchChange = (event) => {
         const term = event.target.value;
         setSearchTerm(term);
-        setContacts([]); // Clear previous results
+        setContactos([]); // Clear previous results
         setSelectedContactId(''); // Clear selected contact
         setSearchError('');
 
         if (term.length >= 5) {
-            fetch(`/contacto/search/${term}`) // Replace with your actual API endpoint for searching contacts
+            fetch(`/contacto/search/${term}`) // Replace with your actual API endpoint for searching contactos
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.length > 0) {
-                        setContacts(data);
+                        setContactos(data);
                     } else {
                         setSearchError('No se encontraron contactos con ese término.');
                     }
                 })
                 .catch((error) => {
-                    console.error('Error searching contacts:', error);
+                    console.error('Error searching contactos:', error);
                     setSearchError('Error al buscar contactos.');
                 });
         } else if (term.length > 0) {
             setSearchError('Ingrese al menos 5 caracteres para buscar.');
         }
     };
- 
+
     const handleContactSelect = (contact) => {
         setSelectedContactId(contact);
+        data.id_entidad = contact.id;
         setIsSearchVisible(false); // Oculta la búsqueda
-        setContacts([]);
+        setContactos([]);
         setSearchTerm('');
         setSearchError('');
     };
 
-    const handleAssign = () => {
+    const handleCategoriaSelect = (categoria) => {
+        setSelectedCategoria(categoria);
+        data.id_categoria = categoria;
+    }
+
+    const handleAssign = (e) => {
+        e.preventDefault();
         if (!selectedContactId) {
             Swal.fire({
                 icon: 'warning',
@@ -71,7 +107,7 @@ const AsignarCategoria = ({ onClose, userId, categorias }) => {
             return;
         }
 
-        if (!selectedCategory) {
+        if (!selectedCategoria) {
             Swal.fire({
                 icon: 'warning',
                 title: '¡Atención!',
@@ -79,38 +115,14 @@ const AsignarCategoria = ({ onClose, userId, categorias }) => {
             });
             return;
         }
-
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        fetch(`/categoria/asignarCategoria`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-            },
-            body: JSON.stringify({ userId: userId, category: selectedCategory, contacto_id: selectedContactId.id, id_dato: id_dato }),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log('Categoría asignada:', data);
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Éxito!',
-                    text: 'La categoría se ha asignado correctamente.',
-                    showConfirmButton: false,
-                    timer: 1500,
-                }).then(() => {
-                    onClose();
-                });
-            })
-            .catch((error) => {
-                console.error('Error asignando categoría:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: '¡Error!',
-                    text: 'Hubo un problema al asignar la categoría.',
-                });
-            });
+        const dataToSend = {
+            id_contacto: userId,
+            id_categoria: data,
+            id_entidad: data.id_entidad,
+            id_dato: data.id_dato,
+            sn_activo: true,
+        }
+        post(route('categoria.asignar'), dataToSend)
     };
 
     const handleClear = () => {
@@ -125,9 +137,9 @@ const AsignarCategoria = ({ onClose, userId, categorias }) => {
             cancelButtonText: 'Cancelar',
         }).then((result) => {
             if (result.isConfirmed) {
-                setSelectedCategory('');
+                setSelectedCategoria('');
                 setSearchTerm('');
-                setContacts([]);
+                setContactos([]);
                 setSelectedContactId(null);
                 setSearchError('');
                 setIsSearchVisible(true);
@@ -143,21 +155,21 @@ const AsignarCategoria = ({ onClose, userId, categorias }) => {
         });
     };
     return (
-      <>
-                <div className="container  mt-4" style={{ maxWidth: '600px' }}> 
-               <h4>Asignar Categoría </h4> 
+        <>
+            <div className="container  mt-4" style={{ maxWidth: '600px' }}>
+                <h4>Asignar Categoría </h4>
 
-               
-                
-              
+
+
+
 
                 <div className="m-3">
                     <label htmlFor="categorySelect" className="form-label">Categoría:</label>
                     <select
                         className="form-control"
                         id="categorySelect"
-                        value={selectedCategory}
-                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        value={selectedCategoria}
+                        onChange={(e) => handleCategoriaSelect(e.target.value)} // Actualiza el estado con el id de la categoría
                         style={{ maxWidth: '500px' }}
                     >
                         <option value="">Seleccione una categoría</option>
@@ -172,62 +184,62 @@ const AsignarCategoria = ({ onClose, userId, categorias }) => {
                 <div className="m-3">
                     <label htmlFor="contactSearch" className="form-label">Otorgado por:</label>
                     {isSearchVisible && (
-    <div>
-  
-        <input
-            type="text"
-            className="form-control"
-            id="contactSearch"
-            placeholder="Buscar contacto (mínimo 5 caracteres)"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            style={{ maxWidth: '500px' }}
-        />
-        {searchError && <div className="form-text text-danger">{searchError}</div>}
-        {contacts.length > 0 && (
-            <ul className="list-group mt-2">
-                {contacts.map((contact) => (
-                    <li
-                        key={contact.id}
-                        className={`list-group-item list-group-item-action ${selectedContactId?.id === contact.id ? 'active' : ''}`}
-                        onClick={() => handleContactSelect(contact)}
-                        style={{ cursor: 'pointer' }}
-                    >
-                        {contact.apellidorazonsocial || contact.car || `ID: ${contact.id}`}
-                    </li>
-                ))}
-            </ul>
-        )}
-    </div>
-)}
-                   {selectedContactId && (
-    <div className=" text-success  mt-2"> {selectedContactId.apellidorazonsocial || selectedContactId.car || `ID: ${selectedContactId.id}`} {selectedContactId.nombrefantasia}</div>
-)}
-                </div> 
-               
+                        <div>
+
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="contactSearch"
+                                placeholder="Buscar contacto (mínimo 5 caracteres)"
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                                style={{ maxWidth: '500px' }}
+                            />
+                            {searchError && <div className="form-text text-danger">{searchError}</div>}
+                            {contactos.length > 0 && (
+                                <ul className="list-group mt-2">
+                                    {contactos.map((contact) => (
+                                        <li
+                                            key={contact.id}
+                                            className={`list-group-item list-group-item-action ${selectedContactId?.id === contact.id ? 'active' : ''}`}
+                                            onClick={() => handleContactSelect(contact)}
+                                            style={{ cursor: 'pointer' }}
+                                        >
+                                            {contact.apellidorazonsocial || contact.car || `ID: ${contact.id}`}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    )}
+                    {selectedContactId && (
+                        <div className=" text-success  mt-2"> {selectedContactId.apellidorazonsocial || selectedContactId.car || `ID: ${selectedContactId.id}`} {selectedContactId.nombrefantasia}</div>
+                    )}
+                </div>
+
                 <div className="m-3">
                     <label htmlFor="contactSearch" className="form-label">ID/MAT/N°:</label>
                     <input
                         type="number"
                         className="form-control"
                         id="contactSearch"
-                       
-                        value={id_dato}
-                        onChange={(e) => setIdDato(e.target.value)}
-                     
+
+                        value={data.id_dato}
+                        onChange={(e) => setData('id_dato', e.target.value)}
+
                         style={{ maxWidth: '500px' }}
                     />
-                    </div>
+                </div>
 
-                <button className="btn btn-success m-3" onClick={handleAssign}  disabled={!selectedContactId || !selectedCategory}>
+                <button className="btn btn-success m-3" onClick={handleAssign} disabled={!selectedContactId || !selectedCategoria}>
                     Asignar
                 </button>
                 <button className="btn btn-warning m-3" onClick={handleClear}>
                     Limpiar
                 </button>
-                </div>
-                </>
-           
+            </div>
+        </>
+
     );
 };
 

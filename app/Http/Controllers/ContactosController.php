@@ -139,6 +139,15 @@ public function searchProv(Request $request)
 
 }
 
+public function search($term)
+{
+    $contactos = Contactos::where('apellidoynombre', 'like', "%$term%")
+        ->orWhere('car', 'like', "%$term%")
+        ->orWhere('nombrefantasia', 'like', "%$term%")
+        ->get();
+
+    return response()->json($contactos);
 
 
+}
 }

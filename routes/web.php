@@ -42,6 +42,8 @@ require __DIR__.'/Menu.php';
 require __DIR__.'/Perfil.php';
 require __DIR__.'/Configuraciones.php';
 require __DIR__.'/api.php';
+require __DIR__.'/categorias.php';
+
 
 
 
