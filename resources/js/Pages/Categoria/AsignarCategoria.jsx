@@ -120,6 +120,7 @@ const AsignarCategoria = ({ onClose, userId }) => {
                     setSelectedContact(null);
                     setSelectedCategoriaId('');
                     setIsSearchVisible(true);
+                    
                 } else {
                     return response.json().then(data => {
                         if (data && data.errors) {

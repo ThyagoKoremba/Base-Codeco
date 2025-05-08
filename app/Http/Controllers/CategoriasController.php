@@ -34,7 +34,6 @@ class CategoriasController extends Controller
 
     public function edit(Categorias $categoria)
     {
-
         return Inertia::render('Categoria/Edit', compact('categoria'));
     }
 
@@ -68,27 +67,23 @@ class CategoriasController extends Controller
     {
         $categorias = Categorias::where('sn_activo', 1)
             ->orderBy('id')
-            ->get(); // Ejecuta la consulta
+            ->get();
 
         return response()->json(['data' => $categorias]);
     }
 
-
     public function assignCategoryToUser(Request $request)
     {
-       
-
-        // Ver el contenido del request enviado desde el front
         $contactoCategoria = new ContactoCategorias();
-        $contactoCategoria->id_contacto= $request->id_contacto;
+        $contactoCategoria->id_contacto = $request->id_contacto;
         $contactoCategoria->id_categoria = $request->id_categoria;
         $contactoCategoria->id_entidad = $request->id_entidad;
-        $contactoCategoria->id_dato= $request->id_dato;
+        $contactoCategoria->id_dato = $request->id_dato;
         $contactoCategoria->fecha_alta = now();
-        $contactoCategoria->sn_activo= $request->sn_activo;
+        $contactoCategoria->sn_activo = $request->sn_activo;
+    
         $contactoCategoria->save();
-
-
-        
+    
+        return response()->json(['ok' => true, 'message' => 'La categoría se ha asignado correctamente.']);
     }
 }
