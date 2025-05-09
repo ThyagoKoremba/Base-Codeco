@@ -120,7 +120,7 @@ const AsignarCategoria = ({ onClose, userId }) => {
         e.preventDefault();
         post(route('categoria.asignar'),{
         onSuccess: () => {
-            handleClear();
+            reset();
             Swal.fire({
                 title: 'Categoria Asignada',
                 text: 'La categoria se ha asignado exitosamente.',

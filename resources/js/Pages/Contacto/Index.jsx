@@ -116,9 +116,7 @@ const Index = ({ contactos }) => {
                                                 <Dropdown.Item>
                                                     <button className="btn w-100 text-start " onClick={() => openModalCategoria(contact)}>Categoria</button>
                                                 </Dropdown.Item>
-                                                <Dropdown.Item>
-                                                    <button className="btn w-100 text-start " onClick={() => openModalAddCategoria(contact)}>Asignar Categoria</button>
-                                                </Dropdown.Item>
+                                                
                                                 <Dropdown.Item as={Link} href={`/contacto/${contact.id}/radicaciones`}>
                                                     <button className="btn w-100 text-start ">Radicaciones</button>
                                                 </Dropdown.Item>
