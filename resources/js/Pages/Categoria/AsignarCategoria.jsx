@@ -48,6 +48,14 @@ const AsignarCategoria = ({ onClose, userId, isEditing = false, initialData = {}
             });
     }, []);
 
+    useEffect(() => {
+        // Actualizar el estado local cuando cambian los datos iniciales (para edición)
+        setSelectedCategoriaId(initialValues.id_categoria);
+        setData('id_categoria', initialValues.id_categoria);
+        setSelectedContact(initialData.entidad ? { id: initialData.id_entidad, apellidorazonsocial: initialData.entidad.apellidorazonsocial, nombrefantasia: initialData.entidad.nombrefantasia, car: initialData.entidad.car } : null);
+        setIsSearchVisible(!isEditing || !initialData.id_entidad);
+    }, [initialValues.id_categoria, initialValues.id_entidad, initialData.entidad, isEditing]);  // Cambiamos la dependencia a propiedades individuales
+
     const handleSearchChange = (event) => {
         const term = event.target.value;
         setSearchTerm(term);
@@ -157,24 +165,26 @@ const AsignarCategoria = ({ onClose, userId, isEditing = false, initialData = {}
         <div className="container mt-4" style={{ maxWidth: '600px' }}>
             <h4>{title}</h4>
 
-            <div className="m-3">
-                <label htmlFor="categorySelect" className="form-label">Categoría:</label>
-                <select
-                    className="form-control"
-                    id="categorySelect"
-                    value={selectedCategoriaId}
-                    onChange={(e) => handleCategoriaSelect(e.target.value)}
-                    style={{ maxWidth: '500px' }}
-                >
-                    <option value="">Seleccione una categoría</option>
-                    {categorias.data?.map((category) => (
-                        <option key={category.id} value={category.id}>
-                            {category.descripcion}
-                        </option>
-                    ))}
-                </select>
-                {errors.id_categoria && <div className="form-text text-danger">{errors.id_categoria}</div>}
-            </div>
+            {!isEditing && (
+                <div className="m-3">
+                    <label htmlFor="categorySelect" className="form-label">Categoría:</label>
+                    <select
+                        className="form-control"
+                        id="categorySelect"
+                        value={selectedCategoriaId}
+                        onChange={(e) => handleCategoriaSelect(e.target.value)}
+                        style={{ maxWidth: '500px' }}
+                    >
+                        <option value="">Seleccione una categoría</option>
+                        {categorias.data?.map((category) => (
+                            <option key={category.id} value={category.id}>
+                                {category.descripcion}
+                            </option>
+                        ))}
+                    </select>
+                    {errors.id_categoria && <div className="form-text text-danger">{errors.id_categoria}</div>}
+                </div>
+            )}
 
             <div className="m-3">
                 <label htmlFor="contactSearch" className="form-label">Otorgado por:</label>
@@ -245,3 +255,4 @@ const AsignarCategoria = ({ onClose, userId, isEditing = false, initialData = {}
 };
 
 export default AsignarCategoria;
+
