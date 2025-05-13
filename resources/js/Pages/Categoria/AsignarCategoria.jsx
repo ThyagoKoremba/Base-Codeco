@@ -2,24 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from '@inertiajs/react';
 import Swal from 'sweetalert2';
 
-const AsignarCategoria = ({ onClose, userId }) => {
-    const initialValues = {
-        id_contacto: userId,
-        id_categoria: '',
-        id_entidad: '',
-        id_dato: '',
-        sn_activo: true,
-    };
+const AsignarCategoria = ({ onClose, userId, isEditing = false, initialData = {} }) => {
+    const initialValues = isEditing
+        ? {
+            id_contacto: initialData.id_contacto || userId,
+            id_categoria: initialData.id_categoria || '',
+            id_entidad: initialData.id_entidad || '',
+            id_dato: initialData.id_dato || '',
+            sn_activo: initialData.sn_activo !== undefined ? initialData.sn_activo : true,
+        }
+        : {
+            id_contacto: userId,
+            id_categoria: '',
+            id_entidad: '',
+            id_dato: '',
+            sn_activo: true,
+        };
 
-    const { data, setData, post, reset, processing, errors } = useForm(initialValues);
+    const { data, setData, post, put, reset, processing, errors } = useForm(initialValues);
 
     const [categorias, setCategorias] = useState([]);
-    const [selectedCategoriaId, setSelectedCategoriaId] = useState(''); // Guardamos solo el ID
+    const [selectedCategoriaId, setSelectedCategoriaId] = useState(initialValues.id_categoria);
     const [searchTerm, setSearchTerm] = useState('');
     const [contactos, setContactos] = useState([]);
-    const [selectedContact, setSelectedContact] = useState(null); // Guardamos el objeto del contacto seleccionado
+    const [selectedContact, setSelectedContact] = useState(initialData.entidad ? { id: initialData.id_entidad, apellidorazonsocial: initialData.entidad.apellidorazonsocial, nombrefantasia: initialData.entidad.nombrefantasia, car: initialData.entidad.car } : null);
     const [searchError, setSearchError] = useState('');
-    const [isSearchVisible, setIsSearchVisible] = useState(true);
+    const [isSearchVisible, setIsSearchVisible] = useState(!isEditing || !initialData.id_entidad);
+    const [title, setTitle] = useState(isEditing ? 'Editar Asignación de Categoría' : 'Asignar Categoría');
+    const [buttonText, setButtonText] = useState(isEditing ? 'Guardar Cambios' : 'Asignar');
 
     useEffect(() => {
         // Fetch categories
@@ -85,8 +95,6 @@ const AsignarCategoria = ({ onClose, userId }) => {
         setData('id_categoria', categoryId);
     };
 
-   
-
     const handleClear = () => {
         Swal.fire({
             title: '¿Estás seguro?',
@@ -116,25 +124,38 @@ const AsignarCategoria = ({ onClose, userId }) => {
             }
         });
     };
-    const handleAssign = (e) => {
-        e.preventDefault();
-        post(route('categoria.asignar'),{
-        onSuccess: () => {
-            reset();
-            Swal.fire({
-                title: 'Categoria Asignada',
-                text: 'La categoria se ha asignado exitosamente.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const routeName = isEditing ? 'categoria.actualizar' : 'categoria.asignar';
+        const method = isEditing ? 'put' : 'post';
+        const options = {
+            onSuccess: () => {
+                setSelectedCategoriaId('');
+                setSearchTerm('');
+                setContactos([]);
+                setSelectedContact(null);
+                setSearchError('');
+                setIsSearchVisible(true);
+                Swal.fire({
+                    title: isEditing ? 'Categoría Actualizada' : 'Categoría Asignada',
+                    text: `La categoría se ha ${isEditing ? 'actualizado' : 'asignado'} exitosamente.`,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+            },
+        };
+
+        if (method === 'post') {
+            post(route(routeName), options);
+        } else if (method === 'put') {
+            put(route(routeName, initialData.id), { ...data, _method: 'put' }, options);
         }
-    })
     };
 
     return (
         <div className="container mt-4" style={{ maxWidth: '600px' }}>
-            <h4>Asignar Categoría</h4>
+            <h4>{title}</h4>
 
             <div className="m-3">
                 <label htmlFor="categorySelect" className="form-label">Categoría:</label>
@@ -199,7 +220,7 @@ const AsignarCategoria = ({ onClose, userId }) => {
             <div className="m-3">
                 <label htmlFor="datoInput" className="form-label">ID/MAT/N°:</label>
                 <input
-                    type="text" // Cambiado a 'text' para permitir otros formatos además de número
+                    type="text"
                     className="form-control"
                     id="datoInput"
                     value={data.id_dato}
@@ -211,10 +232,10 @@ const AsignarCategoria = ({ onClose, userId }) => {
 
             <button
                 className="btn btn-success m-3"
-                onClick={handleAssign}
+                onClick={handleSubmit}
                 disabled={processing || !data.id_entidad || !data.id_categoria}
             >
-                {processing ? 'Asignando...' : 'Asignar'}
+                {processing ? `${buttonText}...` : buttonText}
             </button>
             <button className="btn btn-warning m-3" onClick={handleClear} disabled={processing}>
                 Limpiar
@@ -223,4 +244,4 @@ const AsignarCategoria = ({ onClose, userId }) => {
     );
 };
 
-export default AsignarCategoria; 
+export default AsignarCategoria;
