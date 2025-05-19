@@ -11,6 +11,8 @@ Modal.setAppElement('#app');
 const Index = ({ contactos }) => {
 
 
+console.log(contactos);
+
     const [searchQuery, setSearchQuery] = useState("");
     const [modal, setModal] = useState(false);
     const [modalCategoria, setModalCategoria] = useState(false);
@@ -52,7 +54,9 @@ const Index = ({ contactos }) => {
         setSelectedContact(null);
     }
 
-
+const handleLimpiar = () => {
+    setSearchQuery("");
+};
     
 
     return (
@@ -60,68 +64,99 @@ const Index = ({ contactos }) => {
             <h2>Contactos</h2>
             <div className="container mt-4">
                 <div className="row mb-3">
-                    <div className="col-md-6">
-                    <input
+                    <div className="col-4">
+                        <input
                             type="text"
                             className="form-control"
-                            placeholder="Buscar por Nombre"
+                            placeholder="Contacto"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)} 
                         />
+                    </div>
+                    <div className="col-3">
                         <button
                             type="button"
-                            className="btn btn-primary"
+                            className="btn btn-primary "
                             onClick={handleSearch} 
                         >
                             Buscar
                         </button>
+                          <button
+                            type="button"
+                            className="btn btn-primary ms-2"
+                            onClick={handleLimpiar} 
+                        >
+                           <i class="fa-solid fa-filter-circle-xmark"></i>
+                        </button>
                     </div>
-
-                    <div className="col-md-6 text-right">
+                   
+                    <div className="col-md-4 d-flex justify-content-end align-items-end">
                         <Link href="/contacto/create" className="btn btn-dark">
-                            Crear Contacto
+                            Nuevo
                         </Link>
                     </div>
                 </div>
                 <div className="table-responsive" style={{ maxHeight: '500px', minHeight: '500px', overflowY: 'auto' }}>
-                    <table className="table table-striped">
-                        <thead className="thead-dark" style={{ position: 'sticky', top: 0, zIndex: 10 }}>
-                            <tr>
-                                <th>Apellido / Razon Social</th>
-                                <th>Nombre / Nombre Fantasia</th>
-                                <th>Persona</th>
-                                <th>Identificación</th>
+                    <table className="table table-bordered  table-striped">
+                        <thead  style={{ position: 'sticky', top: 0, zIndex: 10, textAlign: 'center' }}>
+                            <tr >
+                                <th >Apellido / Nombre - Razon Social</th>
+                                <th>ID</th>
+                                <th>ID Persona / Tribut</th>
+                                <th>Cond. Tribut.</th>
+                                <th>Teléfono</th>
                                 <th>Email</th>
-                                <th>Acciones</th>
+                                <th>País/Pcia-SR</th>
+                                <th>Situación</th>
+                                <th ></th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredItems?.map(contact => (
-                                <tr key={contact.id}>
-                                    <td>{contact.apellidorazonsocial}</td>
-                                    <td>{contact.nombrefantasia}</td>
-                                    <td>{contact.fisicojuridico}</td>
-                                    <td>{contact.fisicojuridico === 'JURIDICO' ? (contact.identidad_tributaria + ' ' + contact.id_identidadtributaria_dato) : (contact.identidad_personal + ' ' + contact.id_personal_dato)}</td>
+                                <tr style={{ textAlign: 'center'}} key={contact.id}>
+                                    <td>{contact.apellidoynombre}</td>
+                                    <td>{contact.id}</td>
+                                    
+                                    <td>{contact.id_fisicojuridico === 2 ? (contact.identidad_tributaria + ' ' + contact.id_identidadtributaria_dato) : (contact.identidad_personal + ' ' + contact.id_personal_dato)}</td>
+                                    <td>{contact.id_condiciontributaria}</td>
+                                    <td>{contact.telefono_numero}</td>
                                     <td>{contact.mail_direccion}</td>
-                                    <td >
-                                        <Dropdown >
-                                            <Dropdown.Toggle variant="dark" size="sm" className="w-100"></Dropdown.Toggle>
-                                            <Dropdown.Menu >
-                                                <Dropdown.Item >
-                                                    <button className="btn w-100 text-start " onClick={() => openModal(contact)}>Más Info</button>
-                                                </Dropdown.Item>
-                                                <Dropdown.Item as={Link} href={`/contacto/${contact.id}/edit`}>
-                                                    <button className="btn w-100 text-start ">Editar</button>
-                                                </Dropdown.Item>
-                                                <Dropdown.Item>
-                                                    <button className="btn w-100 text-start " onClick={() => openModalCategoria(contact)}>Categoria</button>
-                                                </Dropdown.Item>
-                                                
-                                                <Dropdown.Item as={Link} href={`/contacto/${contact.id}/radicaciones`}>
-                                                    <button className="btn w-100 text-start ">Radicaciones</button>
-                                                </Dropdown.Item>
-                                            </Dropdown.Menu>
-                                        </Dropdown>
+                                    <td>{contact.pais} / {contact.provincia} / {contact.sucursal}</td>
+                                    <td>{contact.sn_activo === 1 ? 'Activo' : 'Inactivo'}</td>
+                                    
+                                    <td style={{ textAlign: 'right' }}>
+                                        <div className="dropdown ">
+                                            <button className="btn btn-dark" type="button" id="dropdownMenu2"
+                                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" className="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                                                </svg>
+                                            </button>
+                                            <ul className="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <button className="dropdown-item" onClick={() => openModal(contact)}>
+                                                        Más Info
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <Link href={`/contacto/${contact.id}/edit`} className="dropdown-item">
+                                                        Editar
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <button className="dropdown-item" onClick={() => openModalCategoria(contact)}>
+                                                        Categoria
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <Link href={`/contacto/${contact.id}/radicaciones`} className="dropdown-item">
+                                                        Radicaciones
+                                                    </Link>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

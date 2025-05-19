@@ -3,7 +3,6 @@ import Modal from 'react-modal';
 import AsignarCategoria from './AsignarCategoria';
 import './../Contacto/styles.css';
 
-import { MoreHorizontal } from "lucide-react"
 
 Modal.setAppElement('#app');
 
@@ -117,9 +116,14 @@ const CategoriaContacto = ({ userId }) => {
                     <td>{categoria.apellidoynombre}</td>
                     <td>
                       <div className="dropdown">
-                        <button className="btn btn-dark btn-icon" data-bs-toggle="dropdown" aria-expanded="false">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </button>
+                        <button className="btn btn-dark" type="button" id="dropdownMenu2"
+                                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" className="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                                                </svg>
+                                            </button>
                         <ul className="dropdown-menu dropdown-menu-end">
                           <li><button className="dropdown-item" onClick={() => openEditModal({
                             id: categoria.id,
